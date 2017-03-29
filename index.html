@@ -178,13 +178,8 @@
 <ul>
 <li>在使用PopupWindow时，带有navigation bar的手机出现了底部navigation bar将弹出的PopupWindow遮挡住，使用的Android版本在5.0以上。解决方法如下：</li>
 </ul>
-<blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);</div><div class="line">&gt;</div></pre></td></tr></table></figure>
-</blockquote>
-<p>&gt;</p>
-<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);</div></pre></td></tr></table></figure>
 <p>将PopupWindow添加上述属性即可。</p>
-</blockquote>
 
       
 
