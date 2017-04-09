@@ -198,7 +198,12 @@
 <p>这个一般就用不到了，三次放贝塞尔曲线一般可以满足多数情况。</p>
 </li>
 </ul>
-<p>先占个坑</p>
+<h1 id="2-Android-自定义View中的方法"><a href="#2-Android-自定义View中的方法" class="headerlink" title="2. Android 自定义View中的方法"></a>2. Android 自定义View中的方法</h1><p>首先看一下Android自带的绘制曲线的方式：</p>
+<p>​    在自定义View中，经常会用到moveTo, lineTo等一些方法，先设定好path以后再使用canvas进行线条的绘制，那么就来看一下这些方法。</p>
+<h3 id="2-1-moveTo"><a href="#2-1-moveTo" class="headerlink" title="2.1 moveTo"></a>2.1 moveTo</h3><p>​    moveTo用来移动画笔，即确定绘制的初始坐标点。</p>
+<h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>​    lineTo用于绘制直线</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<p>默认从(0, 0)开始绘制，结束点为(300,300)的一条直线。</p>
 
       
 
