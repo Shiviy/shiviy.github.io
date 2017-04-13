@@ -6,12 +6,12 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>贝塞尔曲线绘制动画路径 | Leo&#39;s Blog</title>
+  <title>Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="最近工作中需要做一个曲线的动画，记录下学习的过程。
 1. 贝塞尔曲线介绍1.1百度百科介绍如下：贝塞尔曲线(Bézier curve)，又称贝兹曲线或贝济埃曲线，是应用于二维图形应用程序的数学曲线。一般的矢量图形软件通过它来精确画出曲线，贝兹曲线由线段与节点组成，节点是可拖动的支点，线段像可伸缩的皮筋，我们在绘图工具上看到的钢笔工具就是来做这种矢量曲线的。贝塞尔曲线是计算机图形学中相当重要的参数曲">
 <meta property="og:type" content="article">
-<meta property="og:title" content="贝塞尔曲线绘制动画路径">
+<meta property="og:title" content="Leo's Blog">
 <meta property="og:url" content="http://yoursite.com/2017/03/30/贝塞尔曲线绘制动画路径/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="最近工作中需要做一个曲线的动画，记录下学习的过程。
@@ -22,9 +22,10 @@
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png">
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%A4%BA%E6%84%8F%E5%9B%BE.gif">
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%80%E8%88%AC%E5%8F%82%E6%95%B0%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png">
-<meta property="og:updated_time" content="2017-04-09T16:53:59.000Z">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/006tKfTcgy1fekzs00m7uj30bp00lt8m.jpg">
+<meta property="og:updated_time" content="2017-04-13T05:34:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="贝塞尔曲线绘制动画路径">
+<meta name="twitter:title" content="Leo's Blog">
 <meta name="twitter:description" content="最近工作中需要做一个曲线的动画，记录下学习的过程。
 1. 贝塞尔曲线介绍1.1百度百科介绍如下：贝塞尔曲线(Bézier curve)，又称贝兹曲线或贝济埃曲线，是应用于二维图形应用程序的数学曲线。一般的矢量图形软件通过它来精确画出曲线，贝兹曲线由线段与节点组成，节点是可拖动的支点，线段像可伸缩的皮筋，我们在绘图工具上看到的钢笔工具就是来做这种矢量曲线的。贝塞尔曲线是计算机图形学中相当重要的参数曲">
 <meta name="twitter:image" content="http://onnpnysdl.bkt.clouddn.com/%E7%BA%BF%E6%80%A7%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E5%85%AC%E5%BC%8F.png">
@@ -166,21 +167,6 @@
             <article id="post-贝塞尔曲线绘制动画路径" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      贝塞尔曲线绘制动画路径
-    </h1>
-  
-
-        
-        <a href="/2017/03/30/贝塞尔曲线绘制动画路径/" class="archive-article-date">
-  	<time datetime="2017-03-30T14:32:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-30</time>
-</a>
-        
-      </header>
-    
     <div class="article-entry" itemprop="articleBody">
       
         <p>最近工作中需要做一个曲线的动画，记录下学习的过程。</p>
@@ -213,6 +199,7 @@
 <h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>​    lineTo用于绘制直线</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
 <p>默认从(0, 0)开始绘制，结束点为(300,300)的一条直线。</p>
+<p><img src="http://ww4.sinaimg.cn/large/006tKfTcgy1fekzs00m7uj30bp00lt8m.jpg" alt="三次贝塞尔公式"></p>
 
       
 
