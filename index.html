@@ -187,11 +187,23 @@
 <p>​    在自定义View中，经常会用到moveTo, lineTo等一些方法，先设定好path以后再使用canvas进行线条的绘制，那么就来看一下这些方法。</p>
 <h3 id="2-1-moveTo"><a href="#2-1-moveTo" class="headerlink" title="2.1 moveTo"></a>2.1 moveTo</h3><p>​    moveTo用来移动画笔，即确定绘制的初始坐标点。</p>
 <h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>lineTo用于绘制直线</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Path path = <span class="keyword">new</span> Path();</div><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
 <p>默认从(0, 0)开始绘制，结束点为(300,300)的一条直线。</p>
 <p>首先使用moveTo移动画笔，再使用lineTo</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">60</span>, <span class="number">60</span>);</div><div class="line">path.lineTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fel4pw54g2j30k00zkaap.jpg" alt="Screenshot_1492070823"></p>
+<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fel50y5nhzj307i0dcdfu.jpg" alt="Screenshot_1492072103"></p>
+<h3 id="2-3-quadTo"><a href="#2-3-quadTo" class="headerlink" title="2.3 quadTo"></a>2.3 quadTo</h3><p>quadTo用于绘制二阶贝塞尔曲线</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.quadTo(<span class="number">660</span>, <span class="number">260</span>, <span class="number">860</span>, <span class="number">460</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<p>默认起始点为(0, 0)，前两个参数为贝塞尔曲线的控制点，后两个参数为结束点。效果如图：</p>
+<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fel5nl6gnrj307i0dc74a.jpg" alt="Screenshot_1492073785"></p>
+<p>也可以先试用moveTo方法来确定起始点位置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">path.quadTo(<span class="number">660</span>, <span class="number">260</span>, <span class="number">860</span>, <span class="number">460</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1fel5rtta98j307i0dcaa1.jpg" alt="Screenshot_1492073993"></p>
+<h3 id="2-4-cubicTo"><a href="#2-4-cubicTo" class="headerlink" title="2.4 cubicTo"></a>2.4 cubicTo</h3><p>cubicTo用于绘制三阶贝塞尔曲线，其实就是比二阶贝塞尔曲线多了一个控制点，默认也是以(0, 0)为起始点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">path.cubicTo(<span class="number">160</span>, <span class="number">660</span>, <span class="number">960</span>, <span class="number">1060</span>, <span class="number">260</span>, <span class="number">1260</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<p>其中1，2两个参数是第一个控制点，3，4两个参数是第二个控制点，最后两个参数是结束点。效果如下：</p>
+<p><img src="http://ww1.sinaimg.cn/large/006tKfTcgy1fel60swr60j307i0dcdfu.jpg" alt="Screenshot_1492074591"></p>
 
       
 
