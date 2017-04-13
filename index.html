@@ -161,50 +161,9 @@
       
         <p>最近工作中需要做一个曲线的动画，记录下学习的过程。</p>
 <h1 id="1-贝塞尔曲线介绍"><a href="#1-贝塞尔曲线介绍" class="headerlink" title="1. 贝塞尔曲线介绍"></a>1. 贝塞尔曲线介绍</h1><h3 id="1-1百度百科介绍如下："><a href="#1-1百度百科介绍如下：" class="headerlink" title="1.1百度百科介绍如下："></a>1.1百度百科介绍如下：</h3><p>贝塞尔曲线(Bézier curve)，又称贝兹曲线或贝济埃曲线，是应用于二维图形应用程序的数学曲线。一般的矢量图形软件通过它来精确画出曲线，贝兹曲线由线段与节点组成，节点是可拖动的支点，线段像可伸缩的皮筋，我们在绘图工具上看到的钢笔工具就是来做这种矢量曲线的。贝塞尔曲线是计算机图形学中相当重要的参数曲线，在一些比较成熟的位图软件中也有贝塞尔曲线工具，如PhotoShop等。在Flash4中还没有完整的曲线工具，而在Flash5里面已经提供出贝塞尔曲线工具。</p>
-<p>贝塞尔曲线于1962，由法国工程师皮埃尔·贝塞尔（Pierre Bézier）所广泛发表，他运用贝塞尔曲线来为汽车的主体进行设计。贝塞尔曲线最初由Paul de Casteljau于1959年运用de Casteljau演算法开发，以稳定数值的方法求出贝兹曲线。</p>
-<h3 id="1-2-贝塞尔曲线的公式"><a href="#1-2-贝塞尔曲线的公式" class="headerlink" title="1.2 贝塞尔曲线的公式"></a>1.2 贝塞尔曲线的公式</h3><ul>
-<li><p>线性公式</p>
-<p>给定点P0、P1，线性贝兹曲线只是一条两点之间的直线。公式如下：</p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E7%BA%BF%E6%80%A7%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E5%85%AC%E5%BC%8F.png" alt="线性贝塞尔曲线公式"></p>
-</li>
-<li><p>二次方贝塞尔曲线</p>
-<p>二次方贝塞尔曲线的路径由给定点P0、P1、P2的函数B（t）追踪，公式如下：</p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E4%BA%8C%E6%AC%A1%E6%96%B9%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png" alt="二次方贝塞尔公式">    </p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E4%BA%8C%E6%AC%A1%E6%96%B9%E8%B4%9D%E5%A1%9E%E5%B0%94%E7%A4%BA%E6%84%8F%E5%9B%BE.gif" alt="二次方贝塞尔示意图"></p>
-</li>
-<li><p>三次方贝塞尔曲线</p>
-<p>P0、P1、P2、P3四个点在平面或在三维空间中定义了三次方贝兹曲线。曲线起始于P0走向P1，并从P2的方向来到P3。一般不会经过P1或P2；这两个点只是在那里提供方向资讯。P0和P1之间的间距，决定了曲线在转而趋进P3之前，走向P2方向的“长度有多长”。公式如下：</p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png" alt="三次贝塞尔公式"></p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%A4%BA%E6%84%8F%E5%9B%BE.gif" alt="三次贝塞尔曲线示意图"></p>
-</li>
-<li><p>一般参数公式</p>
-<p>阶贝兹曲线可如下推断。给定点P0、P1、…、Pn，其贝兹曲线即：</p>
-<p><img src="http://onnpnysdl.bkt.clouddn.com/%E4%B8%80%E8%88%AC%E5%8F%82%E6%95%B0%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png" alt="一般参数贝塞尔公式"></p>
-<p>这个一般就用不到了，三次放贝塞尔曲线一般可以满足多数情况。</p>
-</li>
-</ul>
-<h1 id="2-Android-自定义View中的方法"><a href="#2-Android-自定义View中的方法" class="headerlink" title="2. Android 自定义View中的方法"></a>2. Android 自定义View中的方法</h1><p>首先看一下Android自带的绘制曲线的方式：</p>
-<p>​    在自定义View中，经常会用到moveTo, lineTo等一些方法，先设定好path以后再使用canvas进行线条的绘制，那么就来看一下这些方法。</p>
-<h3 id="2-1-moveTo"><a href="#2-1-moveTo" class="headerlink" title="2.1 moveTo"></a>2.1 moveTo</h3><p>​    moveTo用来移动画笔，即确定绘制的初始坐标点。</p>
-<h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>lineTo用于绘制直线</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Path path = <span class="keyword">new</span> Path();</div><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p>默认从(0, 0)开始绘制，结束点为(300,300)的一条直线。</p>
-<p>首先使用moveTo移动画笔，再使用lineTo</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">60</span>, <span class="number">60</span>);</div><div class="line">path.lineTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fel50y5nhzj307i0dcdfu.jpg" alt="Screenshot_1492072103"></p>
-<h3 id="2-3-quadTo"><a href="#2-3-quadTo" class="headerlink" title="2.3 quadTo"></a>2.3 quadTo</h3><p>quadTo用于绘制二阶贝塞尔曲线</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.quadTo(<span class="number">660</span>, <span class="number">260</span>, <span class="number">860</span>, <span class="number">460</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p>默认起始点为(0, 0)，前两个参数为贝塞尔曲线的控制点，后两个参数为结束点。效果如图：</p>
-<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fel5nl6gnrj307i0dc74a.jpg" alt="Screenshot_1492073785"></p>
-<p>也可以先试用moveTo方法来确定起始点位置</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">path.quadTo(<span class="number">660</span>, <span class="number">260</span>, <span class="number">860</span>, <span class="number">460</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p>效果如下：</p>
-<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1fel5rtta98j307i0dcaa1.jpg" alt="Screenshot_1492073993"></p>
-<h3 id="2-4-cubicTo"><a href="#2-4-cubicTo" class="headerlink" title="2.4 cubicTo"></a>2.4 cubicTo</h3><p>cubicTo用于绘制三阶贝塞尔曲线，其实就是比二阶贝塞尔曲线多了一个控制点，默认也是以(0, 0)为起始点。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">path.cubicTo(<span class="number">160</span>, <span class="number">660</span>, <span class="number">960</span>, <span class="number">1060</span>, <span class="number">260</span>, <span class="number">1260</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
-<p>其中1，2两个参数是第一个控制点，3，4两个参数是第二个控制点，最后两个参数是结束点。效果如下：</p>
-<p><img src="http://ww1.sinaimg.cn/large/006tKfTcgy1fel60swr60j307i0dcdfu.jpg" alt="Screenshot_1492074591"></p>
-
+        
+          <a class="article-more-a" href="/2017/03/30/贝塞尔曲线绘制动画路径/#more">more >></a>
+        
       
 
       
