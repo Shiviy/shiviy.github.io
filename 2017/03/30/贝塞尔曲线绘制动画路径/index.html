@@ -22,8 +22,8 @@
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png">
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%89%E6%AC%A1%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%A4%BA%E6%84%8F%E5%9B%BE.gif">
 <meta property="og:image" content="http://onnpnysdl.bkt.clouddn.com/%E4%B8%80%E8%88%AC%E5%8F%82%E6%95%B0%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%85%AC%E5%BC%8F.png">
-<meta property="og:image" content="http://ww4.sinaimg.cn/large/006tKfTcgy1fekzs00m7uj30bp00lt8m.jpg">
-<meta property="og:updated_time" content="2017-04-13T05:34:40.000Z">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1fel1p1a1boj30u01hc3zy.jpg">
+<meta property="og:updated_time" content="2017-04-13T06:41:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Leo's Blog">
 <meta name="twitter:description" content="最近工作中需要做一个曲线的动画，记录下学习的过程。
@@ -196,10 +196,12 @@
 <h1 id="2-Android-自定义View中的方法"><a href="#2-Android-自定义View中的方法" class="headerlink" title="2. Android 自定义View中的方法"></a>2. Android 自定义View中的方法</h1><p>首先看一下Android自带的绘制曲线的方式：</p>
 <p>​    在自定义View中，经常会用到moveTo, lineTo等一些方法，先设定好path以后再使用canvas进行线条的绘制，那么就来看一下这些方法。</p>
 <h3 id="2-1-moveTo"><a href="#2-1-moveTo" class="headerlink" title="2.1 moveTo"></a>2.1 moveTo</h3><p>​    moveTo用来移动画笔，即确定绘制的初始坐标点。</p>
-<h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>​    lineTo用于绘制直线</p>
+<h3 id="2-2-lineTo"><a href="#2-2-lineTo" class="headerlink" title="2.2 lineTo"></a>2.2 lineTo</h3><p>lineTo用于绘制直线</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">path.lineTo(<span class="number">300</span>, <span class="number">300</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
 <p>默认从(0, 0)开始绘制，结束点为(300,300)的一条直线。</p>
-<p><img src="http://ww4.sinaimg.cn/large/006tKfTcgy1fekzs00m7uj30bp00lt8m.jpg" alt="三次贝塞尔公式"></p>
+<p>首先使用moveTo移动画笔，再使用lineTo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">path.moveTo(<span class="number">60</span>, <span class="number">60</span>);</div><div class="line">path.lineTo(<span class="number">360</span>, <span class="number">360</span>);</div><div class="line">canvas.drawPath(path, paint);</div></pre></td></tr></table></figure>
+<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1fel1p1a1boj30u01hc3zy.jpg" alt="Screenshot_1492065357"></p>
 
       
 
