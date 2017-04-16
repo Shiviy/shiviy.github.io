@@ -6,17 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Leo&#39;s Blog</title>
+  <title>Android的消息机制笔记 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="This is a blog that record my learning of Android">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Leo's Blog">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="概述
+Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
+Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android的消息机制笔记">
+<meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="This is a blog that record my learning of Android">
+<meta property="og:description" content="概述
+Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
+Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
+<meta property="og:updated_time" content="2017-04-16T09:37:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Leo's Blog">
-<meta name="twitter:description" content="This is a blog that record my learning of Android">
+<meta name="twitter:title" content="Android的消息机制笔记">
+<meta name="twitter:description" content="概述
+Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
+Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -152,36 +159,65 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Android的消息机制笔记" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/04/16/Android的消息机制笔记/" class="archive-article-date">
-  	<time datetime="2017-04-16T09:04:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-16</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/16/Android的消息机制笔记/">Android的消息机制笔记</a>
+    <h1 class="article-title" itemprop="name">
+      Android的消息机制笔记
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/04/16/Android的消息机制笔记/" class="archive-article-date">
+  	<time datetime="2017-04-16T09:04:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。</li>
+<li>Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到主线程中进行。</li>
+<li>Handler的运行需要底层的MessageQueue和Looper的支撑。</li>
+<li>MessageQueue内部存储了一组消息，以队列的形式对外提供插入和删除的操作，但是其内部的存储结构采用的是单链表的数据结构。MessageQueue只是用来存储消息的。</li>
+<li>Looper以无限循环的方式去查看MessageQueue中是否有消息，如果有的话就处理消息，没有的话就一只处于等待的状态。</li>
+<li>Looper中的特殊概念：ThreadLocal，ThreadLocal并不是线程，它用来获取每个线程中存储的数据。Handler创建的时候会采用当前线程的Looper来构造循环系统，而获取当前线程的Looper就需要用到ThreadLocal。</li>
+<li>ThreadLocal可以在不同线程中互不干扰的存储并提供数据，通过ThreadLocal可以获取每个线程的Looper。注意：线程默认是没有Looper的，如果需要使用Handler就需要手动为线程创建Looper。</li>
+<li>主线程也叫UI线程，他就是ActivityThread，ActivityThread被创建的时候就会默认初始化Looper。</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -193,165 +229,88 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/04/16/Android的消息机制笔记/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/04/16/2017学习目标/" class="archive-article-date">
-  	<time datetime="2017-04-16T07:03:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-16</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/04/16/2017学习目标/">2017学习目标</a>
-    </h1>
+  
+    <a href="/2017/04/16/2017学习目标/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">2017学习目标</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+  
+    <div class="duoshuo"></div>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习目标</a>
-        		</li>
-      		
-		</ul>
-	</div>
 
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/30/贝塞尔曲线绘制动画路径/" class="archive-article-date">
-  	<time datetime="2017-03-30T14:32:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-30</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/30/贝塞尔曲线绘制动画路径/">贝塞尔曲线绘制动画路径</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/29/工作中问题总结/" class="archive-article-date">
-  	<time datetime="2017-03-29T11:52:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/29/工作中问题总结/">工作中问题总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/16/Android开发艺术探索读书笔记/" class="archive-article-date">
-  	<time datetime="2017-03-15T16:05:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/16/Android开发艺术探索读书笔记/">Android开发艺术探索读书笔记</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/08/hello-world/" class="archive-article-date">
-  	<time datetime="2017-03-08T15:20:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/08/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -374,8 +333,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
