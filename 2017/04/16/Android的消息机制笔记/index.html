@@ -8,22 +8,16 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Android的消息机制笔记 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述
-Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
-Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
+  <meta name="description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android的消息机制笔记">
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="概述
-Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
-Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
-<meta property="og:updated_time" content="2017-04-16T09:37:37.000Z">
+<meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
+<meta property="og:updated_time" content="2017-04-16T09:39:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
-<meta name="twitter:description" content="概述
-Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。
-Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到">
+<meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -179,7 +173,9 @@ Handler的作用主要是用来更新UI：有时候在子线程中进行耗时�
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+        <p>记录一下Android开发艺术探索中第10章 Android的消息机制的笔记</p>
+<a id="more"></a>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
 <li>Android的消息机制主要是指Handler的运行机制，从开发的角度来说，Handler是Android消息机制的上层接口。</li>
 <li>Handler的作用主要是用来更新UI：有时候在子线程中进行耗时的I/O操作，可能是读取文件或者访问网络（多数情况是请求网络数据），耗时操作完成时候会需要在UI上进行一些改变，但是我们并不能在子线程中更改UI，所以这个时候可以通过Handler将更行UI的操作切换到主线程中进行。</li>
 <li>Handler的运行需要底层的MessageQueue和Looper的支撑。</li>
