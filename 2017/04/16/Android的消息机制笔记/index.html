@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-04-16T09:39:31.000Z">
+<meta property="og:updated_time" content="2017-04-18T15:28:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -184,6 +184,8 @@
 <li>Looper中的特殊概念：ThreadLocal，ThreadLocal并不是线程，它用来获取每个线程中存储的数据。Handler创建的时候会采用当前线程的Looper来构造循环系统，而获取当前线程的Looper就需要用到ThreadLocal。</li>
 <li>ThreadLocal可以在不同线程中互不干扰的存储并提供数据，通过ThreadLocal可以获取每个线程的Looper。注意：线程默认是没有Looper的，如果需要使用Handler就需要手动为线程创建Looper。</li>
 <li>主线程也叫UI线程，他就是ActivityThread，ActivityThread被创建的时候就会默认初始化Looper。</li>
+<li>Android系统之所以提供Handler是为了解决在子线程中无法访问UI的矛盾。</li>
+<li>系统为什么不允许在子线程中访问UI？这是因为Android的UI控件是线程不安全的，因此如果多线程并发访问可能导致UI控件处于不可预期的状态。</li>
 </ul>
 
       
