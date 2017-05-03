@@ -174,7 +174,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="1-简述"><a href="#1-简述" class="headerlink" title="1. 简述"></a>1. 简述</h2><p>首先看一下Google官方的简述：Low-level class holding the list of messages to be dispatched by a Looper.  Messages are not added directly to a MessageQueue, but rather through Handler objects associated with the Looper.</p>
+<p>简单翻译一下就是说：MessageQueue是比较低层的类，是持有Message的一个链表（由Looper分发）。Messages不是直接添加到MessageQueue中的，而是通过与Looper相关联的Handler来进行的。</p>
+<p>在Android的消息机制中，MessageQueue最主要的方法就是它的插入和读取方法，分别对应enqueueMessage和next。因此主要分析这两个方法。</p>
+<h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><h3 id="2-1-enqueueMessage"><a href="#2-1-enqueueMessage" class="headerlink" title="2.1 enqueueMessage"></a>2.1 enqueueMessage</h3><p>首先来看消息的插入方法，源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(Message msg, <span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Message must have a target."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (msg.isInUse()) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg + <span class="string">" This message is already in use."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (mQuitting) &#123;</div><div class="line">                IllegalStateException e = <span class="keyword">new</span> IllegalStateException(</div><div class="line">                        msg.target + <span class="string">" sending message to a Handler on a dead thread"</span>);</div><div class="line">                Log.w(TAG, e.getMessage(), e);</div><div class="line">                msg.recycle();</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            msg.markInUse();</div><div class="line">            msg.when = when;</div><div class="line">            Message p = mMessages;</div><div class="line">            <span class="keyword">boolean</span> needWake;</div><div class="line">            <span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</div><div class="line">                <span class="comment">// New head, wake up the event queue if blocked.</span></div><div class="line">                msg.next = p;</div><div class="line">                mMessages = msg;</div><div class="line">                needWake = mBlocked;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">// Inserted within the middle of the queue.  Usually we don't have to wake</span></div><div class="line">                <span class="comment">// up the event queue unless there is a barrier at the head of the queue</span></div><div class="line">                <span class="comment">// and the message is the earliest asynchronous message in the queue.</span></div><div class="line">                needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</div><div class="line">                Message prev;</div><div class="line">                <span class="keyword">for</span> (;;) &#123;</div><div class="line">                    prev = p;</div><div class="line">                    p = p.next;</div><div class="line">                    <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">                        needWake = <span class="keyword">false</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">                prev.next = msg;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">// We can assume mPtr != 0 because mQuitting is false.</span></div><div class="line">            <span class="keyword">if</span> (needWake) &#123;</div><div class="line">                nativeWake(mPtr);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+
       
 
       
@@ -182,6 +187,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Android笔记</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -698,6 +714,10 @@
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
               </li>
              
               <li class="article-tag-list-item">
