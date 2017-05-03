@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-03T08:51:50.000Z">
+<meta property="og:updated_time" content="2017-05-03T09:05:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -201,9 +201,9 @@
 <h3 id="MessageQueue"><a href="#MessageQueue" class="headerlink" title="MessageQueue"></a>MessageQueue</h3><ul>
 <li>MessageQueue指的就是消息队列，其主要包含插入和读取两个操作，分别对应enqueueMessage和next方法。其中读取方法自身包含了删除操作。</li>
 <li>MessageQueue的内部实现是一个单链表，主要是因为单链表在插入和读取上有速度优势。</li>
-<li>​</li>
+<li>关于MessageQueue的详细分析可以看<a href="https://shiviy.github.io/2017/05/03/Android消息机制——MessageQueue解析/" target="_blank" rel="external">Android消息机制——MessageQueue解析</a></li>
 </ul>
-
+<h3 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h3>
       
 
       
