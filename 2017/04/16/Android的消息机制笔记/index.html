@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-02T10:04:12.000Z">
+<meta property="og:updated_time" content="2017-05-03T08:51:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -198,6 +198,11 @@
 <p>在主线程中将mThreadLocal的值设为true，子线程1中设置为false，子线程2中不设置，也就是null。安装程序，运行代码，Log如下所示：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">D/MainActivity: [Thread#main]mThreadLocal =  true</div><div class="line">D/MainActivity: [Thread#1]mThreadLocal = false</div><div class="line">D/MainActivity: [Thread#2]mThreadLocal = null</div></pre></td></tr></table></figure>
 <p>由此可以看出，虽然在不同的线程中访问的是同一个ThreadLocal对象，但是它们通过ThreadLocal获取到的值确实不一样的。这是因为不同的线程访问同一个ThreadLocal的get方法，ThreadLocal内部会从各自的线程中取出一个数组，然后再从数组中根据当前的ThreadLocal的索引去查找出对应的value值。不同的线程中的数组是不同的，因此ThreadLocal可以在不同线程中维护一套数据的副本并且彼此互不干扰。这里粗略介绍下ThreadLocal，详细内容可以看<a href="https://shiviy.github.io/2017/05/02/ThreadLocal解析/" target="_blank" rel="external">ThreadLocal解析</a></p>
+<h3 id="MessageQueue"><a href="#MessageQueue" class="headerlink" title="MessageQueue"></a>MessageQueue</h3><ul>
+<li>MessageQueue指的就是消息队列，其主要包含插入和读取两个操作，分别对应enqueueMessage和next方法。其中读取方法自身包含了删除操作。</li>
+<li>MessageQueue的内部实现是一个单链表，主要是因为单链表在插入和读取上有速度优势。</li>
+<li>​</li>
+</ul>
 
       
 
@@ -417,11 +422,11 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
+                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
             
             <div class="clearfix"></div>
