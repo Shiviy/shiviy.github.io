@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/03/Android消息机制——MessageQueue解析/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="1. 简述首先看一下Google官方的简述：Low-level class holding the list of messages to be dispatched by a Looper.  Messages are not added directly to a MessageQueue, but rather through Handler objects associated with">
-<meta property="og:updated_time" content="2017-05-03T10:05:59.000Z">
+<meta property="og:updated_time" content="2017-05-03T10:09:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android消息机制——MessageQueue解析">
 <meta name="twitter:description" content="1. 简述首先看一下Google官方的简述：Low-level class holding the list of messages to be dispatched by a Looper.  Messages are not added directly to a MessageQueue, but rather through Handler objects associated with">
@@ -182,7 +182,7 @@
 <p>当第一条message进来时，满足p == null || when == 0 || when &lt; p.when条件，将当前msg.next指向p，即为null，再将mMessage赋值为当前msg。完成第一条数据的插入操作。</p>
 <p>此后来的消息（假设消息的when == 0或者小于上个消息的when的值），则会作为头消息插入，即新来的消息是从头部开始插入的，最终形成一个单链表，当方法执行完之后，p会被垃圾回收器回收。</p>
 <p>假设后面来的消息的when不为0 或者when比上条消息的when大，那么会走进else部分即：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">Message prev;</div><div class="line">                <span class="keyword">for</span> (;;) &#123;</div><div class="line">                    prev = p;</div><div class="line">                    p = p.next;</div><div class="line">                    <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">                        needWake = <span class="keyword">false</span>;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">                prev.next = msg;</div><div class="line">            &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Message prev;</div><div class="line"><span class="keyword">for</span> (;;) &#123;</div><div class="line">  prev = p;</div><div class="line">  p = p.next;</div><div class="line">  <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">    <span class="keyword">break</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">    needWake = <span class="keyword">false</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">prev.next = msg;</div></pre></td></tr></table></figure>
 <p>进入一个无限循环，想要跳出循环的话，只能break，也就是要满足p == null || when &lt; p.when,也就是说到了消息队列的最后一个节点或者找到某个节点的when比要插入的msg的when大。break之后，执行：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">prev.next = msg;</div></pre></td></tr></table></figure>
 <p>由此将msg插入p和prev之间。</p>
@@ -403,11 +403,11 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
               </li>
              
               <li class="article-tag-list-item">
