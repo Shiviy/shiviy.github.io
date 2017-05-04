@@ -8,16 +8,22 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>ThreadLocal解析 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="This is a blog that record my learning of Android">
+  <meta name="description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
+
+12&amp;gt; This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its ge">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ThreadLocal解析">
 <meta property="og:url" content="http://yoursite.com/2017/05/02/ThreadLocal解析/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="This is a blog that record my learning of Android">
-<meta property="og:updated_time" content="2017-05-02T10:01:51.000Z">
+<meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
+
+12&amp;gt; This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its ge">
+<meta property="og:updated_time" content="2017-05-04T09:56:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
-<meta name="twitter:description" content="This is a blog that record my learning of Android">
+<meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
+
+12&amp;gt; This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its ge">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -173,7 +179,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="ThreadLocal简介"><a href="#ThreadLocal简介" class="headerlink" title="ThreadLocal简介"></a>ThreadLocal简介</h2><p>首先介绍下什么是ThreadLocal，官方给出的介绍如下：</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or set method) has its own, independently initialized copy of the variable.  ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+</blockquote>
+<p>翻译一下</p>
+
       
 
       
@@ -202,6 +213,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Android源码分析</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -382,6 +404,10 @@
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
               </li>
              
               <li class="article-tag-list-item">
