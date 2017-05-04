@@ -18,7 +18,7 @@
 <meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 12&amp;gt;   This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its">
-<meta property="og:updated_time" content="2017-05-04T10:33:27.000Z">
+<meta property="og:updated_time" content="2017-05-04T10:37:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
 <meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
@@ -186,6 +186,10 @@
 <p>翻译过来就是说：这个类提供了线程内部的局部变量，这些局部变量不同于它们普通的副本，因为每个其的线程（通过get或者set方法）都有自己的独立的变量。一般来说ThreadLocal都是private static的，用于关联线程。（英语比较蹩脚）</p>
 <p>总结来说，ThreadLocal的作用就是提供线程内的局部变量，通过它可以在线程内部存储数据，只有在指定的线程中才可以获取到存储到数据，而其他的线程则不可以。用ThreadLocal可以实现一些比较复杂的功能，比如某些数据是以线程为作用域，并且不同线程有不同数据副本的时候，就可以采用ThreadLocal，比如Looper、ActivityThread、AMS等。另一个使用场景就是复杂逻辑下的对象传递，比如监听器的传递。</p>
 <a id="more"></a>
+<h2 id="ThreadLocal源码解析"><a href="#ThreadLocal源码解析" class="headerlink" title="ThreadLocal源码解析"></a>ThreadLocal源码解析</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>首先来看构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* Creates a thread local variable.</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadLocal</span><span class="params">()</span> </span>&#123;</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>内部啥也没做。</p>
+<h3 id="initialValue"><a href="#initialValue" class="headerlink" title="initialValue"></a>initialValue</h3>
       
 
       
