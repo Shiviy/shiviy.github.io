@@ -18,7 +18,7 @@ This class provides thread-local variables.  These variables differ from their n
 <meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or se">
-<meta property="og:updated_time" content="2017-05-05T07:27:27.000Z">
+<meta property="og:updated_time" content="2017-05-05T07:28:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
 <meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
@@ -201,7 +201,7 @@ This class provides thread-local variables.  These variables differ from their n
 <p>也是首先获取到当前的线程，然后获取线程中的ThreadLocalMap对象，如果map不为空的话就获取map中的value并返回，否则就返回setInitialValue()，最终会去调用initialValue方法，也就是设置初始值。</p>
 <h3 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h3><p>上面的set和get方法中都出现了ThreadLocalMap这个类。下面就来看一下ThreadLocalMap的官方介绍：</p>
 <blockquote>
-<p>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values. No operations are exported<br>outside of the ThreadLocal class. The class is package private to allow declaration of fields in class Thread.  To help deal with very large and long-lived usages, the hash table entries use WeakReferences for keys. However, since reference queues are not used, stale entries are guaranteed to be removed only when the table starts running out of space.</p>
+<p>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values. No operations are exported outside of the ThreadLocal class. The class is package private to allow declaration of fields in class Thread.  To help deal with very large and long-lived usages, the hash table entries use WeakReferences for keys. However, since reference queues are not used, stale entries are guaranteed to be removed only when the table starts running out of space.</p>
 </blockquote>
 <p>ThreadLocalMap是一个定制的hash map，只适合用来维护当前线程中的值，在ThreadLocal之外不会导出任何值。该类是私有的，允许在线程中声明，哈希表条目使用弱引用，但是只有空间耗尽，才会回收。</p>
 <p>看上面get和set方法中的getMap：</p>
