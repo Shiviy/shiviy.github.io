@@ -18,7 +18,7 @@
 <meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 12&amp;gt;   This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its">
-<meta property="og:updated_time" content="2017-05-04T10:37:36.000Z">
+<meta property="og:updated_time" content="2017-05-05T05:45:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
 <meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
@@ -189,7 +189,11 @@
 <h2 id="ThreadLocal源码解析"><a href="#ThreadLocal源码解析" class="headerlink" title="ThreadLocal源码解析"></a>ThreadLocal源码解析</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>首先来看构造函数：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">* Creates a thread local variable.</div><div class="line">*/</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadLocal</span><span class="params">()</span> </span>&#123;</div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>内部啥也没做。</p>
-<h3 id="initialValue"><a href="#initialValue" class="headerlink" title="initialValue"></a>initialValue</h3>
+<h3 id="initialValue"><a href="#initialValue" class="headerlink" title="initialValue"></a>initialValue</h3><p>initialValue函数看名字就知道是用来初始化的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该函数在调用get函数的时候会第一次调用，但是如果一开始就调用了set函数，则该函数不会被调用。通常该函数只会被调用一次，除非手动调用了remove函数之后又调用get函数，这种情况下，get函数中还是会调用initialValue函数。</p>
+<p>可以看到，该函数是protected类型的，因此建议在子类中重载该函数，所以通常该函数都会以匿名内部类的形势被重载，从而指定初始值。</p>
+
       
 
       
@@ -416,11 +420,11 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
+                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
               </li>
             
             <div class="clearfix"></div>
