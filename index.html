@@ -242,7 +242,7 @@
       
         <h2 id="ThreadLocal简介"><a href="#ThreadLocal简介" class="headerlink" title="ThreadLocal简介"></a>ThreadLocal简介</h2><p>首先介绍下什么是ThreadLocal，官方给出的介绍如下：</p>
 <blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;   This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or set method) has its own, independently initialized copy of the variable.  ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<p>This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or set method) has its own, independently initialized copy of the variable.  ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).</p>
 </blockquote>
 <p>翻译过来就是说：这个类提供了线程内部的局部变量，这些局部变量不同于它们普通的副本，因为每个其的线程（通过get或者set方法）都有自己的独立的变量。一般来说ThreadLocal都是private static的，用于关联线程。（英语比较蹩脚）</p>
 <p>总结来说，ThreadLocal的作用就是提供线程内的局部变量，通过它可以在线程内部存储数据，只有在指定的线程中才可以获取到存储到数据，而其他的线程则不可以。用ThreadLocal可以实现一些比较复杂的功能，比如某些数据是以线程为作用域，并且不同线程有不同数据副本的时候，就可以采用ThreadLocal，比如Looper、ActivityThread、AMS等。另一个使用场景就是复杂逻辑下的对象传递，比如监听器的传递。</p>
