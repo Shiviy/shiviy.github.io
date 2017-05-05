@@ -18,12 +18,14 @@ This class provides thread-local variables.  These variables differ from their n
 <meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or se">
-<meta property="og:updated_time" content="2017-05-05T07:45:15.000Z">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79gy1ffajo8src2j31au0ry12j.jpg">
+<meta property="og:updated_time" content="2017-05-05T08:21:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
 <meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or se">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/006tNc79gy1ffajo8src2j31au0ry12j.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -214,7 +216,28 @@ This class provides thread-local variables.  These variables differ from their n
 <p>三个线程分别操作mThreadLocal对象并且在各自的线程中获取mThreadLocal的值，打印的log如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">D/MainActivity: [Thread#main]mThreadLocal =  true</div><div class="line">D/MainActivity: [Thread#1]mThreadLocal = false</div><div class="line">D/MainActivity: [Thread#2]mThreadLocal = null</div></pre></td></tr></table></figure>
 <p>可以看到，不同的线程之间是互不干扰的。</p>
-<h3 id="再深入一下"><a href="#再深入一下" class="headerlink" title="再深入一下"></a>再深入一下</h3>
+<h3 id="再深入一下"><a href="#再深入一下" class="headerlink" title="再深入一下"></a>再深入一下</h3><p>下面是从网上看到的关于ThreadLocalMap可能引发内存泄漏的一些分析</p>
+<p>由上面ThreadLocalMap的介绍可知ThreadLocalMap使用ThreadLocal的弱引用作为key，上文介绍到的一些对象之间的关系如图所示：</p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79gy1ffajo8src2j31au0ry12j.jpg" alt="ThreadLocal"></p>
+<blockquote>
+<p>如上图，ThreadLocalMap使用ThreadLocal的弱引用作为key，如果一个ThreadLocal没有外部强引用引用他，那么系统gc的时候，这个ThreadLocal势必会被回收，这样一来，ThreadLocalMap中就会出现key为null的Entry，就没有办法访问这些key为null的Entry的value，如果当前线程再迟迟不结束的话，这些key为null的Entry的value就会一直存在一条强引用链：</p>
+<p><strong>Thread Ref -&gt; Thread -&gt; ThreaLocalMap -&gt; Entry -&gt; value</strong></p>
+<p>永远无法回收，造成内存泄露。</p>
+</blockquote>
+<p>通过阅读ThreadLocalMap的源码发现其实对于上述情况已经有一些防护措施：</p>
+<p>ThreadLocalMap的getEntry方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntry</span><span class="params">(ThreadLocal key)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (table.length - <span class="number">1</span>);</div><div class="line">    Entry e = table[i];</div><div class="line">    <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == key)</div><div class="line">        <span class="keyword">return</span> e;</div><div class="line">    <span class="keyword">else</span></div><div class="line">        <span class="keyword">return</span> getEntryAfterMiss(key, i, e);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>getEntryAfterMiss代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntryAfterMiss</span><span class="params">(ThreadLocal key, <span class="keyword">int</span> i, Entry e)</span> </span>&#123;</div><div class="line">    Entry[] tab = table;</div><div class="line">    <span class="keyword">int</span> len = tab.length;</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</div><div class="line">        ThreadLocal k = e.get();</div><div class="line">        <span class="keyword">if</span> (k == key)</div><div class="line">            <span class="keyword">return</span> e;</div><div class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>)</div><div class="line">            expungeStaleEntry(i);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            i = nextIndex(i, len);</div><div class="line">        e = tab[i];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>expungeStaleEntry代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">expungeStaleEntry</span><span class="params">(<span class="keyword">int</span> staleSlot)</span> </span>&#123;</div><div class="line">    Entry[] tab = table;</div><div class="line">    <span class="keyword">int</span> len = tab.length;</div><div class="line"></div><div class="line">    <span class="comment">// expunge entry at staleSlot</span></div><div class="line">    tab[staleSlot].value = <span class="keyword">null</span>;</div><div class="line">    tab[staleSlot] = <span class="keyword">null</span>;</div><div class="line">    size--;</div><div class="line"></div><div class="line">    <span class="comment">// Rehash until we encounter null</span></div><div class="line">    Entry e;</div><div class="line">    <span class="keyword">int</span> i;</div><div class="line">    <span class="keyword">for</span> (i = nextIndex(staleSlot, len);</div><div class="line">         (e = tab[i]) != <span class="keyword">null</span>;</div><div class="line">         i = nextIndex(i, len)) &#123;</div><div class="line">        ThreadLocal k = e.get();</div><div class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</div><div class="line">            e.value = <span class="keyword">null</span>;</div><div class="line">            tab[i] = <span class="keyword">null</span>;</div><div class="line">            size--;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">int</span> h = k.threadLocalHashCode &amp; (len - <span class="number">1</span>);</div><div class="line">            <span class="keyword">if</span> (h != i) &#123;</div><div class="line">                tab[i] = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">                <span class="comment">// Unlike Knuth 6.4 Algorithm R, we must scan until</span></div><div class="line">                <span class="comment">// null because multiple entries could have been stale.</span></div><div class="line">                <span class="keyword">while</span> (tab[h] != <span class="keyword">null</span>)</div><div class="line">                    h = nextIndex(h, len);</div><div class="line">                tab[h] = e;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> i;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>所以getEntry的大致流程就是：</p>
+<p>首先从ThreadLocal的直接索引位置(通过ThreadLocal.threadLocalHashCode &amp; (len-1)运算得到)获取Entry e，如果e不为null并且key相同则返回e；</p>
+<p>如果e为null或者key不一致则向下一个位置查询，如果下一个位置的key和当前需要查询的key相等，则返回对应的Entry，否则，如果key值为null，则擦除该位置的Entry，否则继续向下一个位置查询</p>
+<p>在这个过程中遇到的key为null的Entry都会被擦除，那么Entry内的value也就没有强引用链，自然会被回收。而且set操作也是类似的，将key为空的这些Entry都删除，防止内存泄漏。但是上面的思想依赖一个前提：<strong>要调用ThreadLocalMap的getEntry或者set函数</strong>，这显然不可能在任何条件成立，因此很多情况下需要手动调用<strong>remove</strong>函数，手动删除不需要的Entry。</p>
+<p>所以JDK建议将ThreadLocal变量定义成private static的，这样的话ThreadLocal的生命周期就更长，由于一直存在ThreadLocal的强引用，所以ThreadLocal也就不会被回收，也就能保证任何时候都能根据ThreadLocal的弱引用访问到Entry的value值，然后remove它，防止内存泄露。</p>
+<p>以上。</p>
+
       
 
       
@@ -433,15 +456,15 @@ This class provides thread-local variables.  These variables differ from their n
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
