@@ -18,7 +18,7 @@ This class provides thread-local variables.  These variables differ from their n
 <meta property="og:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
 
 This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or se">
-<meta property="og:updated_time" content="2017-05-05T07:28:41.000Z">
+<meta property="og:updated_time" content="2017-05-05T07:45:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ThreadLocal解析">
 <meta name="twitter:description" content="ThreadLocal简介首先介绍下什么是ThreadLocal，官方给出的介绍如下：
@@ -198,7 +198,7 @@ This class provides thread-local variables.  These variables differ from their n
 <p>首先获取到当前线程，然后通过getMap方法获取到当前线程内部的ThreadLocalMap对象，判断如果map不为空就存储下value，key为当前ThreadLocal的引用，否则的话就新建一个map</p>
 <h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>再来看一下get方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">    Thread t = Thread.currentThread();</div><div class="line">    ThreadLocalMap map = getMap(t);</div><div class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</div><div class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</div><div class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>)</div><div class="line">            <span class="keyword">return</span> (T)e.value;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> setInitialValue();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也是首先获取到当前的线程，然后获取线程中的ThreadLocalMap对象，如果map不为空的话就获取map中的value并返回，否则就返回setInitialValue()，最终会去调用initialValue方法，也就是设置初始值。</p>
+<p>也是首先获取到当前的线程，然后获取线程中的ThreadLocalMap对象，如果map不为空的话就获取map中的value并返回，否则就返回setInitialValue()，最终会去调用initialValue方法，也就是获取初始值。</p>
 <h3 id="ThreadLocalMap"><a href="#ThreadLocalMap" class="headerlink" title="ThreadLocalMap"></a>ThreadLocalMap</h3><p>上面的set和get方法中都出现了ThreadLocalMap这个类。下面就来看一下ThreadLocalMap的官方介绍：</p>
 <blockquote>
 <p>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values. No operations are exported outside of the ThreadLocal class. The class is package private to allow declaration of fields in class Thread.  To help deal with very large and long-lived usages, the hash table entries use WeakReferences for keys. However, since reference queues are not used, stale entries are guaranteed to be removed only when the table starts running out of space.</p>
@@ -209,8 +209,12 @@ This class provides thread-local variables.  These variables differ from their n
 <p>可以看出，ThreadLocalMap在ThreadLocal中定义，而在每个Thread中包含了一个ThreadLocalMap，它的key是ThreadLocal实例本身，而value就是需要存储的Object对象。</p>
 <p>在Thread中包含这个成员变量：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* ThreadLocal values pertaining to this thread. This map is maintained</span></div><div class="line"> * by the ThreadLocal class. */</div><div class="line">ThreadLocal.ThreadLocalMap threadLocals = <span class="keyword">null</span>;</div></pre></td></tr></table></figure>
-<p>ThreadLocal就是在操作Thread中的ThreadLocalMap进行存储。</p>
-
+<h3 id="小结一下"><a href="#小结一下" class="headerlink" title="小结一下"></a>小结一下</h3><p>ThreadLocal就是在操作Thread中的ThreadLocalMap进行数据的存储。正是因为每个线程中都有ThreadLocalMap，在指定的线程中存储数据以后，只有在指定的线程中可以获取到存储到数据，下面举一个书上的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> ThreadLocal&lt;Boolean&gt; mThreadLocal = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</div><div class="line">mThreadLocal.set(<span class="keyword">true</span>);</div><div class="line">Log.d(TAG, <span class="string">"[Thread#main]mThreadLocal =  "</span> + mThreadLocal.get());</div><div class="line"></div><div class="line"><span class="keyword">new</span> Thread(<span class="string">"Thread#1"</span>) &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        mThreadLocal.set(<span class="keyword">false</span>);</div><div class="line">        Log.d(TAG, <span class="string">"[Thread#1]mThreadLocal = "</span> + mThreadLocal.get());</div><div class="line">    &#125;</div><div class="line">&#125;.start();</div><div class="line"></div><div class="line"><span class="keyword">new</span> Thread(<span class="string">"Thread#2"</span>) &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        Log.d(TAG, <span class="string">"[Thread#2]mThreadLocal = "</span> + mThreadLocal.get());</div><div class="line">    &#125;</div><div class="line">&#125;.start();</div></pre></td></tr></table></figure>
+<p>三个线程分别操作mThreadLocal对象并且在各自的线程中获取mThreadLocal的值，打印的log如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">D/MainActivity: [Thread#main]mThreadLocal =  true</div><div class="line">D/MainActivity: [Thread#1]mThreadLocal = false</div><div class="line">D/MainActivity: [Thread#2]mThreadLocal = null</div></pre></td></tr></table></figure>
+<p>可以看到，不同的线程之间是互不干扰的。</p>
+<h3 id="再深入一下"><a href="#再深入一下" class="headerlink" title="再深入一下"></a>再深入一下</h3>
       
 
       
@@ -429,7 +433,7 @@ This class provides thread-local variables.  These variables differ from their n
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -437,11 +441,11 @@ This class provides thread-local variables.  These variables differ from their n
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
+                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
               </li>
             
             <div class="clearfix"></div>
