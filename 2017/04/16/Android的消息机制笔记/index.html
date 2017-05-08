@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-08T10:24:33.000Z">
+<meta property="og:updated_time" content="2017-05-08T10:30:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -229,7 +229,12 @@
 <p>可以看到loop方法是一个死循环，跳出循环的唯一方法就是msg == null，也就是queue.next() == null。由于MessageQueue的next方法是一个阻塞操作，当没有新消息时会一只阻塞在那里，这也导致loop一直阻塞在那里。当MessageQueue的next方法返回了新的消息，则Looper就会去处理这条消息：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    msg.target.dispatchMessage(msg);</div><div class="line">&#125; <span class="keyword">finally</span> &#123;</div><div class="line">    <span class="keyword">if</span> (traceTag != <span class="number">0</span>) &#123;</div><div class="line">        Trace.traceEnd(traceTag);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>其中，msg.target就是发送这条消息的Handler对象。这样，Handler发送的消息又交给了它的dispatchMessage来处理。最终释放消息占据的资源。</p>
-
+<p>所以Looper的主要作用就是：</p>
+<ol>
+<li>与当前线程绑定，保证一个线程只会有一个Looper实例，同时一个Looper实例也只有一个MessageQueue。</li>
+<li>loop()方法，不断从MessageQueue中去取消息，交给消息的target属性(也就是Handler)的dispatchMessage去处理。</li>
+</ol>
+<h3 id="Handler"><a href="#Handler" class="headerlink" title="Handler"></a>Handler</h3>
       
 
       
