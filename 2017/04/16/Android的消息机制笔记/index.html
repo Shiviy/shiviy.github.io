@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-03T09:05:36.000Z">
+<meta property="og:updated_time" content="2017-05-08T07:25:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -203,7 +203,11 @@
 <li>MessageQueue的内部实现是一个单链表，主要是因为单链表在插入和读取上有速度优势。</li>
 <li>关于MessageQueue的详细分析可以看<a href="https://shiviy.github.io/2017/05/03/Android消息机制——MessageQueue解析/" target="_blank" rel="external">Android消息机制——MessageQueue解析</a></li>
 </ul>
-<h3 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h3>
+<h3 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h3><ul>
+<li>Looper在消息机制中扮演着消息循环的角色，它会不停的从MessageQueue中查看是否有新消息，如果有就会立即处理，如果没有就会一只阻塞在那里。</li>
+<li>​</li>
+</ul>
+
       
 
       
@@ -422,19 +426,19 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
+                <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
               </li>
             
             <div class="clearfix"></div>
