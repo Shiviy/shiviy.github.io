@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-08T07:25:53.000Z">
+<meta property="og:updated_time" content="2017-05-08T08:00:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -205,9 +205,25 @@
 </ul>
 <h3 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h3><ul>
 <li>Looper在消息机制中扮演着消息循环的角色，它会不停的从MessageQueue中查看是否有新消息，如果有就会立即处理，如果没有就会一只阻塞在那里。</li>
-<li>​</li>
+<li>构造方法 如下所示：</li>
 </ul>
-
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">    mThread = Thread.currentThread();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在构造方法中，Looper创建了一个MessageQueue对象，然后将当前线程对象保存起来。</p>
+<ul>
+<li>Handler工作需要Looper，如果没有Looper就会报错，通过Looper.prepare()即可为当前线程创建一个Looper，接着通过Looper.loop()来开启消息循环，代码如下所示：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> Thread(<span class="string">"Thread#2"</span>)&#123;</div><div class="line">  <span class="meta">@Override</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span> <span class="params">()</span> </span>&#123;</div><div class="line">    Looper.prepare();</div><div class="line">    Handler handler = <span class="keyword">new</span> Handler();</div><div class="line">    Looper.loop();</div><div class="line">  &#125;;</div><div class="line">&#125;.start();</div></pre></td></tr></table></figure>
+<ul>
+<li>除了prepare方法外，还有一个prepareMainLooper方法，这个方法主要用来给主线程，也就是ActivityThread创建Looper使用的，其本质也是通过prepare来实现的。</li>
+<li>由于主线程的特殊性，Looper提供了一个getMainLooper的方法，通过它可以在任何地方获取到主线程的Looper。</li>
+<li>Looper可以退出，可以调用quit或者quitSafely来退出一个Looper，两者的区别是：quit会直接退出Looper，而quitSafely会设定一个退出标记，然后把消息队列中已经有的消息处理完之后才会安全退出。</li>
+<li>Looper退出后通过Handler发送的消息会失败，这个时候Handler的send方法会返回false。在子线程中如果手动为其创建了Looper，那么所有的事情做完之后应该手动调用quit方法来终止循环，否则这个字线程就会一只处于等待状态，而如果退出Looper之后，这个线程会立即终止。</li>
+</ul>
+<p>下面看Looper的两个重要的方法</p>
+<h4 id="prepare"><a href="#prepare" class="headerlink" title="prepare()"></a>prepare()</h4><p>Looper的prepare方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</div><div class="line">    &#125;</div><div class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>sThreadLocal是一个ThreadLocal对象，ThreadLocal上面有详细介绍。首先判断sThreadLocal是否为null，如果不为null则抛出异常，这就说明了prepare方法不能被调用两次，从而保证了一个线程中只有一个Looper。而如果sThreadLocal为null的时候，则将一个Looper的实例放入Thera 的Local。</p>
+<h4 id="loop"><a href="#loop" class="headerlink" title="loop()"></a>loop()</h4>
       
 
       
@@ -426,15 +442,15 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
               </li>
              
               <li class="article-tag-list-item">
