@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/04/16/Android的消息机制笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
-<meta property="og:updated_time" content="2017-05-08T15:49:09.000Z">
+<meta property="og:updated_time" content="2017-05-08T16:16:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的消息机制笔记">
 <meta name="twitter:description" content="记录一下Android开发艺术探索中第10章 Android的消息机制的笔记">
@@ -246,6 +246,17 @@
 <p>最终调用了sendMessageAtTime方法，可以看到，方法内部直接获取了MessageQueue，然后调用enqueueMessage方法，方法如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">    msg.target = <span class="keyword">this</span>;</div><div class="line">    <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">        msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>该方法首先将msg.target赋值为this，即Handler的实例，在之前分析的loop方法中会取出每个msg然后交给msg.target.dispatchMessage(msg)去处理消息。最终enqueueMessage方法会调用queue的enqueueMessage方法，该方法的作用是在MessageQueue中插入一条新的消息。有关enqueueMessage方法的分析，可以参考<a href="https://shiviy.github.io/2017/05/03/Android消息机制——MessageQueue解析/" target="_blank" rel="external">Android消息机制——MessageQueue解析</a></p>
+<p>之前说过Handler的工作需要Looper，那么Looper会调用prepare和loop方法。在当前执行的线程中保存着一个Looper实例，它会获取到保存到一个MessageQueue对象，然后进入一个死循环中，不断的从MessageQueue中读取Handler发来的消息，然后再调用Handler中的dispatchMessage方法，该方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;</div><div class="line">        handleCallback(msg);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到 ，该方法最终调用了handleMessage方法，也就是我们在Handler中重写的handlerMessage，根据msg.what来进行消息的实际处理。</p>
+<h3 id="消息流程总结"><a href="#消息流程总结" class="headerlink" title="消息流程总结"></a>消息流程总结</h3><p>以上就是整个消息流程，我们总结一下：</p>
+<ol>
+<li>首先通过ThreadLocal(Looper.prepare()方法)在本线程中保存一个Looper实例，然后该实例中又保存有一个MessageQueue对象。Looper.prepare()在每个线程中职能调用一次，保证了每个线程中只有一个MessageQueue。</li>
+<li>Looper.loop()会让当前线程进入一个无限循环，loop 方法又会调用MessageQueue的next方法，也就是不断的从MessageQueue中读取消息，然后回调msg.target.dispatchMessage() 方法（msg.target就是Handler的实例）。</li>
+<li>Handler的构造方法会获取当前线程保存的Looper实例，进而与Looper实例中的MessageQueue相关联。</li>
+<li>Handler的sendMessage方法会将msg的target赋值为handler自身(msg.target = this)，然后将msg插入MessageQueue中。</li>
+<li>在构造Handler的时候，我们会重写handlerMessage方法，也就是msg.target.dispatchMessage(msg)最终调用的方法来处理我们自己的逻辑。</li>
+</ol>
 
       
 
@@ -465,19 +476,19 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">学习目标</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
+                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Android笔记</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android开发艺术探索Note</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Android源码分析</a>
               </li>
             
             <div class="clearfix"></div>
