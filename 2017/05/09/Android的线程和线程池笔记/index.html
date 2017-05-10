@@ -20,7 +20,7 @@ Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentServ
 简介
 线程是Android中的一个很重要的概念，从用途上来说，线程分为主线程和子线程，主线程主要处理界面相关的事情，而子线程则往往用于执行耗时的操作。
 Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentService，同时HandlerThread也是一种特殊的线程。对于AsyncTask来说，它的底层用到了线程">
-<meta property="og:updated_time" content="2017-05-10T15:12:55.000Z">
+<meta property="og:updated_time" content="2017-05-10T15:20:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的线程和线程池笔记">
 <meta name="twitter:description" content="记录一下11章Android的线程和线程池的学习过程。
@@ -200,6 +200,15 @@ Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentServ
 <p>一个示例如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">DownLoadFile</span> <span class="keyword">extends</span> <span class="title">AsyncTask</span>&lt;<span class="title">URL</span>, <span class="title">Integer</span>, <span class="title">Long</span>&gt; </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Long <span class="title">doInBackground</span><span class="params">(URL... params)</span> </span>&#123;</div><div class="line">        <span class="keyword">int</span> count = params.length;</div><div class="line">        <span class="keyword">long</span> totalSize = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</div><div class="line">            totalSize += Downloader.downloadFile(params[i]);</div><div class="line">            publishProgress((<span class="keyword">int</span>) (i / (<span class="keyword">float</span>) count) * <span class="number">100</span>);</div><div class="line">            <span class="keyword">if</span> (isCancelled()) &#123;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> totalSize;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onProgressUpdate</span><span class="params">(Integer... values)</span> </span>&#123;</div><div class="line">        setProgressPercent(values[<span class="number">0</span>]);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostExecute</span><span class="params">(Long aLong)</span> </span>&#123;</div><div class="line">        Toast.makeText(getApplicationContext(), <span class="string">"Download"</span> + aLong + <span class="string">"bytes"</span>, Toast.LENGTH_SHORT);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>上述代码实现了一个具体的AsyncTask类，用于模拟文件的下载</p>
+<p>AsyncTask使用的注意点：</p>
+<ul>
+<li>AsyncTask必须在主线程中加载，也就是说第一次访问AsyncTask必须在主线程，在Android4.1及以上版本已经被系统自动完成。</li>
+<li>AsyncTask的对象必须在主线程中创建。</li>
+<li>execute方法必须在主线程中调用。</li>
+<li>不要在程序中直接调用onPreExecute、doInBackground、onProgressUpdate、onPostExecute方法</li>
+<li>一个AsyncTask对象职能调用一次execute方法，否则会报运行异常。</li>
+<li>Android1.6之前AsyncTask是串行执行任务，Android1.6的时候才用线程池并行处理任务，Android3.0开始为了避免并发错误，又采用一个线程串行执行任务。</li>
+</ul>
 
       
 
