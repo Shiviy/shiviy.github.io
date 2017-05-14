@@ -20,7 +20,7 @@ Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentServ
 简介
 线程是Android中的一个很重要的概念，从用途上来说，线程分为主线程和子线程，主线程主要处理界面相关的事情，而子线程则往往用于执行耗时的操作。
 Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentService，同时HandlerThread也是一种特殊的线程。对于AsyncTask来说，它的底层用到了线程">
-<meta property="og:updated_time" content="2017-05-14T13:34:46.000Z">
+<meta property="og:updated_time" content="2017-05-14T15:31:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android的线程和线程池笔记">
 <meta name="twitter:description" content="记录一下11章Android的线程和线程池的学习过程。
@@ -240,7 +240,7 @@ Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentServ
 <p>可以看出IntentService只是通过mServiceHandler发送了一个消息，这个消息会在HandlerThread中被处理。mServiceHandler收到消息后，会将Intent对象传递给onHandleIntent方法去处理。这个Intent对象和外界的startService(intent)中的intent内容完全是一致的，通过这个Intent对象即可解析出外界启动IntentService时所传递的参数，通过这些参数可以区分具体的后台的任务。这样就可以对不同的后台任务进行处理。当onHandleIntent方法执行结束之后，IntentService会通过stopSelf(int startId)来尝试停止服务。</p>
 <p>ServiceHandler的实现如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ServiceHandler</span><span class="params">(Looper looper)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(looper);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        onHandleIntent((Intent)msg.obj);</div><div class="line">        stopSelf(msg.arg1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>而onHandleIntent是一个抽象方法，需要在子类中去实现，它的作用时从Intent参数中区分具体的任务并执行这些任务。IntentService的具体使用请参考：<a href=""></a></p>
+<p>而onHandleIntent是一个抽象方法，需要在子类中去实现，它的作用时从Intent参数中区分具体的任务并执行这些任务。IntentService的具体使用请参考：<a href="https://shiviy.github.io/2017/05/14/Android-IntentService使用/" target="_blank" rel="external">Android IntentService使用初体验</a></p>
 
       
 
