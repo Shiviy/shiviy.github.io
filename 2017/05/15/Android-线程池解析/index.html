@@ -8,16 +8,37 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Android 线程池解析 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="This is a blog that record my learning of Android">
+  <meta name="description" content="接上一篇Android的线程和线程池笔记本篇介绍Android中的线程池
+概述首先是线程池的优点：
+
+重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。
+有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。
+对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。
+
+Android中的线程池等概念来源于Java中的Executor，Executo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android 线程池解析">
 <meta property="og:url" content="http://yoursite.com/2017/05/15/Android-线程池解析/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="This is a blog that record my learning of Android">
-<meta property="og:updated_time" content="2017-05-15T10:57:51.000Z">
+<meta property="og:description" content="接上一篇Android的线程和线程池笔记本篇介绍Android中的线程池
+概述首先是线程池的优点：
+
+重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。
+有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。
+对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。
+
+Android中的线程池等概念来源于Java中的Executor，Executo">
+<meta property="og:updated_time" content="2017-05-15T13:40:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android 线程池解析">
-<meta name="twitter:description" content="This is a blog that record my learning of Android">
+<meta name="twitter:description" content="接上一篇Android的线程和线程池笔记本篇介绍Android中的线程池
+概述首先是线程池的优点：
+
+重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。
+有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。
+对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。
+
+Android中的线程池等概念来源于Java中的Executor，Executo">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -151,7 +172,27 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>接上一篇<a href="https://shiviy.github.io/2017/05/09/Android的线程和线程池笔记/" target="_blank" rel="external">Android的线程和线程池笔记</a>本篇介绍Android中的线程池</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先是线程池的优点：</p>
+<ol>
+<li>重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。</li>
+<li>有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。</li>
+<li>对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。</li>
+</ol>
+<p>Android中的线程池等概念来源于Java中的Executor，Executor是一个接口，真正的线程池的实现为ThreadPoolExecutor，它提供了一系列的参数来配置线程池，从线程池的功能特性来说，Android的线程池主要分为4类，可以通过Executors所提供的工厂方法来得到，它们分别是：</p>
+<ol>
+<li>FixedThreadPool</li>
+<li>CachedThreadPool</li>
+<li>ScheduledThreadPool</li>
+<li>SingleThreadPool</li>
+</ol>
+<p>Android中的线程池都是直接或者间接通过配置ThreadPoolExecutor来实现的 ，因此首先来看ThreadPoolExecutor。</p>
+<a id="more"></a>
+<h3 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h3><p>ThreadPoolExecutor是线程池的真正实现，它的构造方法提供了一系列参数来配置线程池，构造方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></div><div class="line">                          <span class="keyword">int</span> maximumPoolSize,</div><div class="line">                          <span class="keyword">long</span> keepAliveTime,</div><div class="line">                          TimeUnit unit,</div><div class="line">                          BlockingQueue&lt;Runnable&gt; workQueue,</div><div class="line">                          ThreadFactory threadFactory,</div><div class="line">                          RejectedExecutionHandler handler) &#123;</div><div class="line">    <span class="keyword">if</span> (corePoolSize &lt; <span class="number">0</span> ||</div><div class="line">        maximumPoolSize &lt;= <span class="number">0</span> ||</div><div class="line">        maximumPoolSize &lt; corePoolSize ||</div><div class="line">        keepAliveTime &lt; <span class="number">0</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</div><div class="line">    <span class="keyword">if</span> (workQueue == <span class="keyword">null</span> || threadFactory == <span class="keyword">null</span> || handler == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</div><div class="line">    <span class="keyword">this</span>.corePoolSize = corePoolSize;</div><div class="line">    <span class="keyword">this</span>.maximumPoolSize = maximumPoolSize;</div><div class="line">    <span class="keyword">this</span>.workQueue = workQueue;</div><div class="line">    <span class="keyword">this</span>.keepAliveTime = unit.toNanos(keepAliveTime);</div><div class="line">    <span class="keyword">this</span>.threadFactory = threadFactory;</div><div class="line">    <span class="keyword">this</span>.handler = handler;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>分别介绍各个参数：</p>
+<h4 id="corePoolSize"><a href="#corePoolSize" class="headerlink" title="corePoolSize"></a>corePoolSize</h4><p>线程池的核心线程数，默认情况下，核心线程会在线程池中一直存活，即使它们处于闲置状态。如果将ThreadPoolExecutor的allowCoreThreadTimeOut属性设置为true，那么闲置的核心线程在等待信任务到来时会有超时策略，这个时间间隔由keepAliveTime所指定，当等待时间超过keepAliveTime所指定的时长后，核心线程就会被终止。</p>
+
       
 
       

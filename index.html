@@ -152,6 +152,23 @@
     
     <div class="article-entry" itemprop="articleBody">
       
+        <p>接上一篇<a href="https://shiviy.github.io/2017/05/09/Android的线程和线程池笔记/">Android的线程和线程池笔记</a>本篇介绍Android中的线程池</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先是线程池的优点：</p>
+<ol>
+<li>重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。</li>
+<li>有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。</li>
+<li>对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。</li>
+</ol>
+<p>Android中的线程池等概念来源于Java中的Executor，Executor是一个接口，真正的线程池的实现为ThreadPoolExecutor，它提供了一系列的参数来配置线程池，从线程池的功能特性来说，Android的线程池主要分为4类，可以通过Executors所提供的工厂方法来得到，它们分别是：</p>
+<ol>
+<li>FixedThreadPool</li>
+<li>CachedThreadPool</li>
+<li>ScheduledThreadPool</li>
+<li>SingleThreadPool</li>
+</ol>
+<p>Android中的线程池都是直接或者间接通过配置ThreadPoolExecutor来实现的 ，因此首先来看ThreadPoolExecutor。</p>
+        
+          <a class="article-more-a" href="/2017/05/15/Android-线程池解析/#more">more >></a>
         
       
 
