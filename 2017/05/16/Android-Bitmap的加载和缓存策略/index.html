@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/16/Android-Bitmap的加载和缓存策略/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="本篇记录一下Android开发艺术探索的Bitmap的相关知识。">
-<meta property="og:updated_time" content="2017-05-16T16:02:45.000Z">
+<meta property="og:updated_time" content="2017-05-16T16:06:45.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Bitmap的加载和缓存策略">
 <meta name="twitter:description" content="本篇记录一下Android开发艺术探索的Bitmap的相关知识。">
@@ -184,7 +184,7 @@
 <p>向LruCache中添加一个缓存对象：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mMemoryCache.put(key, bitmap);</div></pre></td></tr></table></figure>
 <p>LruCache还支持删除操作，通过remove方法即可删除一个指定的缓存对象。</p>
-<p>书中对于LruCache的实现并没有做详细的介绍，我自己分析了一下源码的实现<a href=""></a></p>
+<p>书中对于LruCache的实现并没有做详细的介绍，我自己分析了一下源码的实现<a href="https://shiviy.github.io" target="_blank" rel="external">LruCache的实现原理分析</a></p>
 
       
 
