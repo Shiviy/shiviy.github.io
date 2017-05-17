@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/17/LruCache的实现原理分析/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="概述Android开发艺术探索上并没有对LruCache的实现方法以及原理作出介绍，我觉得有必要去了解一下LruCache的具体实现，因此记录一下学习过程。">
-<meta property="og:updated_time" content="2017-05-17T14:09:51.000Z">
+<meta property="og:updated_time" content="2017-05-17T14:34:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LruCache的实现原理分析">
 <meta name="twitter:description" content="概述Android开发艺术探索上并没有对LruCache的实现方法以及原理作出介绍，我觉得有必要去了解一下LruCache的具体实现，因此记录一下学习过程。">
@@ -160,7 +160,17 @@
 <p>If your cached values hold resources that need to be explicitly released, override <code>entryRemoved(boolean, K, V, V)</code>.</p>
 <p>如果你的缓存持有资源明确需要被释放，重写entryRemoved(boolean, K, V, V)方法</p>
 <p>If a cache miss should be computed on demand for the corresponding keys, override <code>create(K)</code>. This simplifies the calling code, allowing it to assume a value will always be returned, even when there’s a cache miss.</p>
+<p>如果缓存未命中需要计算相关的key（key对应的item丢失），重写create。这简化了调用的代码，认为总是有value返回的，甚至在缓存未命中的时候。</p>
+<p>By default, the cache size is measured in the number of entries. Override <code>sizeOf(K, V)</code> to size the cache in different units. For example, this cache is limited to 4MiB of bitmaps:</p>
+<p>默认情况下，缓存的大小是由item数量决定，重写sizeOf来计算不同的缓存对象的大小</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt; <span class="keyword">int</span> cacheSize = <span class="number">4</span> * <span class="number">1024</span> * <span class="number">1024</span>; <span class="comment">// 4MiB</span></div><div class="line">&gt;    LruCache&lt;String, Bitmap&gt; bitmapCache = <span class="keyword">new</span> LruCache&lt;String, Bitmap&gt;(cacheSize) &#123;</div><div class="line">&gt;        <span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">sizeOf</span><span class="params">(String key, Bitmap value)</span> </span>&#123;</div><div class="line">&gt;            <span class="keyword">return</span> value.getByteCount();</div><div class="line">&gt;        &#125;</div><div class="line">&gt;    &#125;</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<p>This class is thread-safe. Perform multiple cache operations atomically by synchronizing on the cache:</p>
+<p>LruCache是线程安全的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt;  <span class="keyword">synchronized</span> (cache) &#123;</div><div class="line">&gt;      <span class="keyword">if</span> (cache.get(key) == <span class="keyword">null</span>) &#123;</div><div class="line">&gt;          cache.put(key, value);</div><div class="line">&gt;      &#125;</div><div class="line">&gt;    &#125;</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<p>This class does not allow null to be used as a key or value. A return value of null from <code>get(K)</code>, <code>put(K, V)</code> or <code>remove(K)</code> is unambiguous: the key was not in the cache.</p>
+<p>LruCache不允许key或者value为空</p>
 </blockquote>
+<p>大致就是这些意思。</p>
 
       
 
