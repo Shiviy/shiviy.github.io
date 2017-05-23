@@ -6,18 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Android Bitmap的加载和缓存策略 | Leo&#39;s Blog</title>
+  <title>DiskLruCache的用法简介 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本篇记录一下Android开发艺术探索的Bitmap的相关知识。">
+  <meta name="description" content="DiskLruCacheDiskLruCache用于实现磁盘缓存，它将缓存对象写入文件系统实现缓存。
+由于不是Google官方的，所以需要自己下载，Google source上的源码是有些问题的，推荐去CSDN上下载，地址如下：
+http://download.csdn.net/detail/sinyu890807/7709759
+下载好源码之后，直接拷进项目中就行了。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android Bitmap的加载和缓存策略">
-<meta property="og:url" content="http://yoursite.com/2017/05/16/Android-Bitmap的加载和缓存策略/index.html">
+<meta property="og:title" content="DiskLruCache的用法简介">
+<meta property="og:url" content="http://yoursite.com/2017/05/23/DiskLruCache的用法简介/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="本篇记录一下Android开发艺术探索的Bitmap的相关知识。">
-<meta property="og:updated_time" content="2017-05-23T14:39:21.000Z">
+<meta property="og:description" content="DiskLruCacheDiskLruCache用于实现磁盘缓存，它将缓存对象写入文件系统实现缓存。
+由于不是Google官方的，所以需要自己下载，Google source上的源码是有些问题的，推荐去CSDN上下载，地址如下：
+http://download.csdn.net/detail/sinyu890807/7709759
+下载好源码之后，直接拷进项目中就行了。">
+<meta property="og:updated_time" content="2017-05-23T14:40:39.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android Bitmap的加载和缓存策略">
-<meta name="twitter:description" content="本篇记录一下Android开发艺术探索的Bitmap的相关知识。">
+<meta name="twitter:title" content="DiskLruCache的用法简介">
+<meta name="twitter:description" content="DiskLruCacheDiskLruCache用于实现磁盘缓存，它将缓存对象写入文件系统实现缓存。
+由于不是Google官方的，所以需要自己下载，Google source上的源码是有些问题的，推荐去CSDN上下载，地址如下：
+http://download.csdn.net/detail/sinyu890807/7709759
+下载好源码之后，直接拷进项目中就行了。">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -131,60 +140,46 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Android-Bitmap的加载和缓存策略" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-DiskLruCache的用法简介" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Android Bitmap的加载和缓存策略
+      DiskLruCache的用法简介
     </h1>
   
 
         
-        <a href="/2017/05/16/Android-Bitmap的加载和缓存策略/" class="archive-article-date">
-  	<time datetime="2017-05-16T13:27:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-16</time>
+        <a href="/2017/05/23/DiskLruCache的用法简介/" class="archive-article-date">
+  	<time datetime="2017-05-23T14:16:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-23</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本篇记录一下Android开发艺术探索的Bitmap的相关知识。</p>
+        <h3 id="DiskLruCache"><a href="#DiskLruCache" class="headerlink" title="DiskLruCache"></a>DiskLruCache</h3><p>DiskLruCache用于实现磁盘缓存，它将缓存对象写入文件系统实现缓存。</p>
+<p>由于不是Google官方的，所以需要自己下载，Google source上的源码是有些问题的，推荐去CSDN上下载，地址如下：</p>
+<p><a href="http://download.csdn.net/detail/sinyu890807/7709759" target="_blank" rel="external">http://download.csdn.net/detail/sinyu890807/7709759</a></p>
+<p>下载好源码之后，直接拷进项目中就行了。</p>
 <a id="more"></a>
-<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>本章主要介绍了Bitmap的高效加载，Android中的常用缓存策略包括LruCache和DiskLruCache，对于列表卡顿的优化。</p>
-<h3 id="Bitmap的高效加载"><a href="#Bitmap的高效加载" class="headerlink" title="Bitmap的高效加载"></a>Bitmap的高效加载</h3><p>首先看一下Bitmap的加载，使用BitmapFactory提供的4类方法：decodeFile、decodeResource、decodeStream、和decodeByteArray，分别用于支持从文件系统，资源，输入流以及字节数组中加载出一个Bitmap对象，其中decodeFile和decodeResource又间接调用了decodeStream方法。</p>
-<p>如何高效的加载图片？可以采用BitmapFactory.Options来加载所需尺寸的图片。即将需要加载的图片缩放后再加载进来。主要用到了BitmapFactory.Options的inSampleSize参数：采样率。当inSampleSize为1时，图片为原来大小，而当它大于1时，比如为2的时候，采样后的图片宽高都是原来的1/2，而图片大小则变成原来的1/4。</p>
-<p>也即是说采样率必须大于1才会有效果，而且采样率同时作用于宽高，采样后的图片大小为之前的1/4，官方建议采样率大小为2的指数形式。</p>
-<p>获取采样率的流程如下：</p>
-<ol>
-<li>将BitmapFactory.Options的inJustDecodeBounds设置为true并加载图片。</li>
-<li>从BitmapFactory.Options中取出图片的原始宽高信息，它们对应于outWidth和outHeight参数。</li>
-<li>计算出所需的采样率inSampleSize</li>
-<li>将BitmapFactory.Options的inJustDecodeBounds设置为false并重新加载图片</li>
-</ol>
-<p>说明一下inJustDecodeBounds这个参数，当它设置为true的时候，BitmapFactory只会解析图片的原始宽高信息，并不会去真正加载图片，而这个宽高信息和图片的位置和运行设备有关。比如一张图片放在不同drawable目录下或者在不同的设备上，获取到的结果都有可能不同，这和Android的资源加载机制有关。</p>
-<p>上述流程的代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">decodeSampleBitmapFromResouce</span><span class="params">(Resources resources, <span class="keyword">int</span> resId,</span></span></div><div class="line">                                                   <span class="keyword">int</span> reqWidth, <span class="keyword">int</span> reqHeight) &#123;</div><div class="line">    <span class="keyword">final</span> BitmapFactory.Options options = <span class="keyword">new</span> BitmapFactory.Options();</div><div class="line">    <span class="comment">//首先设置inSampleDecodeBounds为true</span></div><div class="line">    options.inJustDecodeBounds = <span class="keyword">true</span>;</div><div class="line">    <span class="comment">//加载图片</span></div><div class="line">    BitmapFactory.decodeResource(resources, resId, options);</div><div class="line">    <span class="comment">//计算出所需采样率</span></div><div class="line">    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);</div><div class="line">    <span class="comment">//设置inJustDecodeBounds为false</span></div><div class="line">    options.inJustDecodeBounds = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> BitmapFactory.decodeResource(resources, resId, options);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculateInSampleSize</span><span class="params">(BitmapFactory.Options options, <span class="keyword">int</span> reqWidth, <span class="keyword">int</span> reqHeight)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> width = options.outWidth;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">int</span> height = options.outHeight;</div><div class="line">    <span class="keyword">int</span> inSampleSize = <span class="number">1</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (reqWidth &gt; width || reqHeight &gt; height) &#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> halfWidth = width / <span class="number">2</span>;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> halfHeight = height / <span class="number">2</span>;</div><div class="line"></div><div class="line">        <span class="keyword">while</span> ((halfWidth / inSampleSize) &gt; reqHeight</div><div class="line">                &amp;&amp; (halfHeight / inSampleSize) &gt; reqHeight) &#123;</div><div class="line">            inSampleSize *= <span class="number">2</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> inSampleSize;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="Android中的缓存策略"><a href="#Android中的缓存策略" class="headerlink" title="Android中的缓存策略"></a>Android中的缓存策略</h3><p>缓存策略主要包含缓存的添加、获取和删除这三类操作。目前常用的一种缓存算法是LRU(Latest Recently Used)，LRU是近期最少使用算法，就是说当缓存满时，会优先淘汰那些近期最少使用的缓存对象。采用LRU的缓存有两种：LruCache和DiskLruCache，LruCache用于实现内存缓存，而DiskLruCache则是存储设备缓存，者两者的完美结合就可以很方便的实现一个ImageLoader。</p>
-<h4 id="LruCache"><a href="#LruCache" class="headerlink" title="LruCache"></a>LruCache</h4><p>LruCache是Android3.1提供的一个缓存类，建议使用support_v4兼容包中的。</p>
-<p>LruCache是一个泛型类，内部采用一个LinkedHashMap以强引用的方式存储外界的缓存对象，它提供了get和put来完成缓存的获取和添加操作，当缓存满时，LruCache会移除焦躁使用的缓存对象，然后再添加新的缓存对象。</p>
-<ul>
-<li><strong>强引用：</strong> 直接的对象引用</li>
-<li><strong>软引用：</strong> 当一个对象只有软引用存在时，系统内存不足时，次对象会被回收。</li>
-<li><strong>弱引用：</strong> 当一个对象只有弱引用时，此对象随时会被gc回收。</li>
-</ul>
-<p>LruCache是线程安全的，用图片缓存来举例说明LruCache的初始化过程：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> maxMemory=(<span class="keyword">int</span>)Runtime.getRuntime().maxMemory()/<span class="number">1024</span>;</div><div class="line"><span class="comment">//设置缓存大小为可用内存1/8</span></div><div class="line"><span class="keyword">int</span> cacheSize=maxMemory/<span class="number">8</span>;</div><div class="line"><span class="comment">//初始化LruCache对象</span></div><div class="line">mMemoryCache=<span class="keyword">new</span> LruCache&lt;String,Bitmap&gt;(cacheSize)&#123;</div><div class="line">    <span class="meta">@override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">sizeOf</span><span class="params">(String key,Bitmap bitmap)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> bitmap.getRowBytes()*bitmap.getHeight()/<span class="number">1024</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>上面的代码中，只需要提供缓存总容量大小并重写sizeOf方法即可。sizeOf的作用是计算缓存对象的大小，这里大小的单位需要和总容量的单位一致。上述代码中，总容量大小为当前进程的可用内存的1/8，单位为KB，而sizeOf方法则完成了Bitmap对象的大小计算。除以1024就是为了将其单位转换为KB，和总容量大小的单位一致。</p>
-<p>某些特殊情况下，还需要重写LruCache的entryRemove方法，LruCache移除旧缓存时会调用entryRemove方法，可以在entryRemove中完成一些资源回收工作。</p>
-<p>从LruCache中获取一个缓存对象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mMemoryCache.get(key);</div></pre></td></tr></table></figure>
-<p>向LruCache中添加一个缓存对象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mMemoryCache.put(key, bitmap);</div></pre></td></tr></table></figure>
-<p>LruCache还支持删除操作，通过remove方法即可删除一个指定的缓存对象。</p>
-<p>书中对于LruCache的实现并没有做详细的介绍，我自己分析了一下源码的实现<a href="https://shiviy.github.io/2017/05/17/LruCache的实现原理分析/" target="_blank" rel="external">LruCache的实现原理分析</a></p>
+<h4 id="打开缓存"><a href="#打开缓存" class="headerlink" title="打开缓存"></a>打开缓存</h4><p>首先DiskLruCache不可以new出实例，因此想要创建一个DiskLruCache实例，需要用它的open方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DiskLruCache <span class="title">open</span><span class="params">(File directory, <span class="keyword">int</span> appVersion, <span class="keyword">int</span> valueCount, <span class="keyword">long</span> maxSize)</span></span></div></pre></td></tr></table></figure>
+<p>一共4个参数，分别介绍下，首先第一个参数是数据的缓存地址，第二个参数是应用版本号，第三个参数指定同一个key可以对应多少个缓存文件，基本都是传1，第四个参数指定可以缓存多少字节的数据。</p>
+<p>获取缓存地址的方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取缓存地址</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> context</div><div class="line"> * <span class="doctag">@param</span> uniqueName 为了对不同类型的数据进行区分而设定的一个唯一值</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> File <span class="title">getDiskCacheDir</span><span class="params">(Context context, String uniqueName)</span> </span>&#123;</div><div class="line">    String cachePath;</div><div class="line">    <span class="keyword">if</span> (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())</div><div class="line">            || !Environment.isExternalStorageRemovable()) &#123;</div><div class="line">        cachePath = context.getExternalCacheDir().getPath();</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        cachePath = context.getCacheDir().getPath();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> File(cachePath + File.separator + uniqueName);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>获取应用版本号方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 获取app版本号</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> context</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getAppVersion</span><span class="params">(Context context)</span> </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), <span class="number">0</span>);</div><div class="line">        <span class="keyword">return</span> info.versionCode;</div><div class="line">    &#125; <span class="keyword">catch</span> (PackageManager.NameNotFoundException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后两个参数一个传1，一个传10M，因此一个open方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">(Context context, String uniqueName)</span> </span>&#123;</div><div class="line">    DiskLruCache diskLruCache = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        File file = getDiskCacheDir(context, uniqueName);</div><div class="line">        <span class="keyword">if</span> (file.exists()) &#123;</div><div class="line">            file.mkdir();</div><div class="line">        &#125;</div><div class="line">        diskLruCache.open(file, getAppVersion(context), <span class="number">1</span>, <span class="number">10</span> * <span class="number">1024</span> * <span class="number">1024</span>);</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>至此，一个DiskLruCache就创建好了，接下来就看它的写入，读取，删除等方法。</p>
+<h4 id="写入缓存"><a href="#写入缓存" class="headerlink" title="写入缓存"></a>写入缓存</h4><p>首先是将资源下载下来，基本的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">downloadUrlToString</span><span class="params">(String urlString, OutputStream outputStream)</span> </span>&#123;</div><div class="line">    HttpURLConnection urlConnection = <span class="keyword">null</span>;</div><div class="line">    BufferedOutputStream out = <span class="keyword">null</span>;</div><div class="line">    BufferedInputStream in = <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">final</span> URL url = <span class="keyword">new</span> URL(urlString);</div><div class="line">        urlConnection = (HttpURLConnection) url.openConnection();</div><div class="line">        in = <span class="keyword">new</span> BufferedInputStream(urlConnection.getInputStream(), <span class="number">8</span> * <span class="number">1024</span>);</div><div class="line">        out = <span class="keyword">new</span> BufferedOutputStream(outputStream, <span class="number">8</span> * <span class="number">1024</span>);</div><div class="line">        <span class="keyword">int</span> b;</div><div class="line">        <span class="keyword">while</span> ((b = in.read()) != -<span class="number">1</span>) &#123;</div><div class="line">            out.write(b);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        <span class="keyword">if</span> (urlConnection != <span class="keyword">null</span>) &#123;</div><div class="line">            urlConnection.disconnect();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">if</span> (out != <span class="keyword">null</span>) &#123;</div><div class="line">                out.close();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (in != <span class="keyword">null</span>) &#123;</div><div class="line">                in.close();</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>访问urlString中的网址，并通过outputStream写到本地，之后即可以开始写入的操作了。DiskLruCache的写入操作是通过    DiskLruCache.Editor这个类完成，这个类也不能new出实例，需要通过edit方法获取实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Editor <span class="title">edit</span><span class="params">(String key)</span> <span class="keyword">throws</span> IOException </span>&#123;</div><div class="line">    <span class="keyword">return</span> edit(key, ANY_SEQUENCE_NUMBER);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述方法需要一个key，这个key将会成为缓存文件的文件名，</p>
 
       
 
@@ -214,17 +209,6 @@
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Android开发艺术探索笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
@@ -275,7 +259,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/05/16/Android-Bitmap的加载和缓存策略/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/05/23/DiskLruCache的用法简介/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -289,18 +273,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/05/17/LruCache的实现原理分析/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          LruCache的实现原理分析
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/05/15/Android-线程池解析/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Android 线程池解析</div>
+    <a href="/2017/05/17/LruCache的实现原理分析/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">LruCache的实现原理分析</div>
       <i class="icon-circle-right"></i>
     </a>
   
