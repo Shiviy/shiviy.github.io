@@ -20,7 +20,7 @@ http://download.csdn.net/detail/sinyu890807/7709759
 由于不是Google官方的，所以需要自己下载，Google source上的源码是有些问题的，推荐去CSDN上下载，地址如下：
 http://download.csdn.net/detail/sinyu890807/7709759
 下载好源码之后，直接拷进项目中就行了。">
-<meta property="og:updated_time" content="2017-05-24T14:59:37.000Z">
+<meta property="og:updated_time" content="2017-05-24T15:08:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DiskLruCache的用法简介">
 <meta name="twitter:description" content="DiskLruCacheDiskLruCache用于实现磁盘缓存，它将缓存对象写入文件系统实现缓存。
@@ -195,6 +195,15 @@ http://download.csdn.net/detail/sinyu890807/7709759
 <p>需要传入之前的key，返回的是一个Snapshot对象，只需要调用它的getInputStream方法就可以得到缓存文件的输入流。一段完整的读取缓存的代码如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getDiskCache</span><span class="params">(String url)</span></span>&#123;</div><div class="line">    String key = hashKeyForDisk(url);</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        DiskLruCache.Snapshot snapshot = mDiskLruCache.get(key);</div><div class="line">        <span class="keyword">if</span> (snapshot != <span class="keyword">null</span>)&#123;</div><div class="line">            InputStream is = snapshot.getInputStream(<span class="number">0</span>);</div><div class="line">            Bitmap bitmap = BitmapFactory.decodeStream(is);</div><div class="line">            setBitmap(bitmap);</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>用BitmapFactory的decodeStream方法将文件流解析成Bitmap对象，并将它设置到Image View中。</p>
+<h4 id="移除缓存"><a href="#移除缓存" class="headerlink" title="移除缓存"></a>移除缓存</h4><p>移除缓存用DiskLruCache的remove方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeCache</span><span class="params">(String url)</span></span>&#123;</div><div class="line">    String key = hashKeyForDisk(url);</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        mDiskLruCache.remove(key);</div><div class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="其他API"><a href="#其他API" class="headerlink" title="其他API"></a>其他API</h4><p>再来介绍一下其他的API</p>
+<ol>
+<li>size() 这个方法会返回当前缓存路径下所有缓存数据的总字节数，以byte为单位。一般用来计算当前缓存数据的总大小。</li>
+<li>flush() 这个方法之前也有提到过，它用于将内存中的操作记录同步到日志文件（journal文件）。通常在Activity的onPause方法中调用一次flush().</li>
+<li>close() 用来关闭DiskLruCache，通常在destroy中调用。</li>
+<li>delete() 将所有缓存删除，通常在需要手动清理缓存的时候，调用。</li>
+</ol>
 
       
 
