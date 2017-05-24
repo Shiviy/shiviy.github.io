@@ -22,7 +22,7 @@
 在使用PopupWindow时，带有navigation bar的手机出现了底部navigation bar将弹出的PopupWindow遮挡住，使用的Android版本在5.0以上。解决方法如下：
 
 1popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_">
-<meta property="og:updated_time" content="2017-03-29T12:15:59.000Z">
+<meta property="og:updated_time" content="2017-05-24T16:10:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="工作中问题总结">
 <meta name="twitter:description" content="问题记录​    记录一下平时工作时遇到的比较奇怪的问题。
@@ -169,6 +169,19 @@
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);</div></pre></td></tr></table></figure>
 <p>将PopupWindow添加上述属性即可。</p>
+<ul>
+<li>2017/5/24 今日在工作中遇到了一个Fragment不初始化的问题：</li>
+</ul>
+<p>在一个Activity中，有5个自定义的ViewPager，由于在自定义布局中的ViewPager的ID是相同的，因此导致只有第一个ViewPager的Fragment会初始化。</p>
+<p>导致以上问题的原因就在于FragmentPagerAdapter中的instantiateItem函数中FragmentManager以container的id加fragment的position为标记。导致第一个ViewPager的position初始化后进了缓存，第二个ViewPager的position1就直接从缓存中获取数据:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">instantiateItem</span><span class="params">(ViewGroup container, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mCurTransaction == <span class="keyword">null</span>) &#123;</div><div class="line">        mCurTransaction = mFragmentManager.beginTransaction();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> itemId = getItemId(position);</div><div class="line"></div><div class="line">    <span class="comment">// Do we already have this fragment?</span></div><div class="line">    String name = makeFragmentName(container.getId(), itemId);</div><div class="line">    Fragment fragment = mFragmentManager.findFragmentByTag(name);</div><div class="line">    <span class="keyword">if</span> (fragment != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Attaching item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.attach(fragment);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        fragment = getItem(position);</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Adding item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.add(container.getId(), fragment,</div><div class="line">                makeFragmentName(container.getId(), itemId));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (fragment != mCurrentPrimaryItem) &#123;</div><div class="line">        fragment.setMenuVisibility(<span class="keyword">false</span>);</div><div class="line">        fragment.setUserVisibleHint(<span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> fragment;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上container.getId()就是fragment父控件的ID</p>
+<p>所以解决的方法有两种</p>
+<ol>
+<li>重写一个PagerAdapter，自己修改makeFragmentName的规则</li>
+<li>给每一个Fragment的父控件设置不同的ID</li>
+</ol>
+<p>在此次遇到的问题中，由于ViewPager的数量比较少，因此采用了第二种方法，给每个ViewPager在代码中setId，解决了问题。</p>
 
       
 
