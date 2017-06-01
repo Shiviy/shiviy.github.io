@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/25/Android-IPC机制学习/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
-<meta property="og:updated_time" content="2017-06-01T15:06:14.000Z">
+<meta property="og:updated_time" content="2017-06-01T15:34:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android IPC机制学习">
 <meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
@@ -159,6 +159,19 @@
 <li>第一种情况是一个应用因为某些原因自身需要采用多进程模式来实现，比如有些模块由于特殊原因，需要单独运行在单独的进程中，又或者未来加大一个应用可使用的内存所以需要通过多进程来获取多份内存空间。因为Android对单个应用所使用的最大内存做了限制，早期一些版本肯能是16MB，不同设备有不同的大小。</li>
 <li>第二种情况是当前的应用需要向其他应用获取数据，由于是两个应用，因此必须采用跨进程的方式来获取所需的数据。比如ContentProvider就是一种跨进程通信。</li>
 </ol>
+<h3 id="Android中的多进程模式"><a href="#Android中的多进程模式" class="headerlink" title="Android中的多进程模式"></a>Android中的多进程模式</h3><p>我们首先需要了解Android中的多进程模式，通过给四大组件制定android:process属性，我们就可以开启多进程模式，但是在实际使用中却会导致各种问题，下面会详细分析这些问题。</p>
+<h4 id="开启多进程模式"><a href="#开启多进程模式" class="headerlink" title="开启多进程模式"></a>开启多进程模式</h4><p>Android中的多进程指的是在一个应用中存在多个进程的情况，那么首先来看下怎么开启多个线程。</p>
+<p>在Android中使用多进程，需要给四大组件在AndroidMenifest中指定android:process属性。</p>
+<h4 id="多进程模式所带来的问题"><a href="#多进程模式所带来的问题" class="headerlink" title="多进程模式所带来的问题"></a>多进程模式所带来的问题</h4><p>一般来说在一个应用中使用了多进程会造成以下一些问题</p>
+<ol>
+<li>静态成员和单例模式完全失效。</li>
+<li>线程同步机制完全失效</li>
+<li>SharedPreference的可靠性下降。</li>
+<li>Application会多次创建。</li>
+</ol>
+<p>12两点其实原因是类似的，Android为每一个进程都分配了一个独立的虚拟机，不同的虚拟机在内存分配上有不同的地址空间，这就导致在不同的虚拟机中访问同一个类的对象会产生多份副本。因此所有运行在不同进程中的四大组件，只要它们需要通过内存来共享数据，那么都会共享失败。2所造成的原因和1类似，既然都不是一块内存，那么不管是锁对象还是锁全局类都无法保证线程同步。</p>
+<p>第3点的原因是因为SharedPreference不支持两个进程同时去执行写操作，这有可能会导致数据丢失。因为SharedPreference底层是通过读写XML文件来实现的，那么并发写肯定会出现问题。</p>
+<p>第4个问题，由于一个组件在新的进程中运行的时候，系统需要在创建新的进程的时候分配独立的虚拟机，相当于启动一个应用，因此又会创建新的Application。</p>
 
       
 
