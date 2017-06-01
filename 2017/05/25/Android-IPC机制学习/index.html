@@ -8,16 +8,16 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Android IPC机制学习 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，这就涉及到Binder了，接下来纪录Binder的学习过程。">
+  <meta name="description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android IPC机制学习">
 <meta property="og:url" content="http://yoursite.com/2017/05/25/Android-IPC机制学习/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，这就涉及到Binder了，接下来纪录Binder的学习过程。">
-<meta property="og:updated_time" content="2017-05-25T13:19:18.000Z">
+<meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
+<meta property="og:updated_time" content="2017-06-01T15:06:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android IPC机制学习">
-<meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，这就涉及到Binder了，接下来纪录Binder的学习过程。">
+<meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -151,8 +151,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，这就涉及到Binder了，接下来纪录Binder的学习过程。</p>
+        <p>在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。</p>
 <a id="more"></a>
+<h3 id="IPC机制简介"><a href="#IPC机制简介" class="headerlink" title="IPC机制简介"></a>IPC机制简介</h3><p>首先要知道什么是IPC，IPC是Inter-Process Communication的简写，意思指进程间通信或者跨进程通信。那么说到IPC就肯定要说到多进程。</p>
+<p>多进程的情况分为两种</p>
+<ol>
+<li>第一种情况是一个应用因为某些原因自身需要采用多进程模式来实现，比如有些模块由于特殊原因，需要单独运行在单独的进程中，又或者未来加大一个应用可使用的内存所以需要通过多进程来获取多份内存空间。因为Android对单个应用所使用的最大内存做了限制，早期一些版本肯能是16MB，不同设备有不同的大小。</li>
+<li>第二种情况是当前的应用需要向其他应用获取数据，由于是两个应用，因此必须采用跨进程的方式来获取所需的数据。比如ContentProvider就是一种跨进程通信。</li>
+</ol>
 
       
 
