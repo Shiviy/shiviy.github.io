@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="概述今天在项目中遇到一个比较磨人的需求，涉及到了ViewPager嵌套ViewPager的滑动问题，写一篇博客来记录下有关于ViewPager嵌套使用的一些坑，以及View的事件的再次学习。">
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fg8gk5rmh7j309a0gowfl.jpg">
-<meta property="og:updated_time" content="2017-06-03T16:31:09.000Z">
+<meta property="og:updated_time" content="2017-06-03T16:46:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ViewPager的嵌套问题">
 <meta name="twitter:description" content="概述今天在项目中遇到一个比较磨人的需求，涉及到了ViewPager嵌套ViewPager的滑动问题，写一篇博客来记录下有关于ViewPager嵌套使用的一些坑，以及View的事件的再次学习。">
@@ -155,7 +155,8 @@
       
         <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>今天在项目中遇到一个比较磨人的需求，涉及到了ViewPager嵌套ViewPager的滑动问题，写一篇博客来记录下有关于ViewPager嵌套使用的一些坑，以及View的事件的再次学习。</p>
 <a id="more"></a>
-<h3 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h3><p>首先看一下项目中的需求，大致效果图如下：<img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fg8gk5rmh7j309a0gowfl.jpg" alt="7984DF9A-9F38-44C0-8A1A-B76A6475EB96"></p>
+<h3 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h3><p>首先看一下项目中的需求，大致效果图如下：</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fg8gk5rmh7j309a0gowfl.jpg" alt="7984DF9A-9F38-44C0-8A1A-B76A6475EB96"></p>
 <p>以上是UI图，最上方的3个tab需要可以滑动，而每个tab都对应着常规、个性、特定、豪华四个tab。我的实现思路是用两个ViewPager，最外层是一个ViewPager，对应3个tab，ViewPager的内部又是一个ViewPager，对应下面4个tab。</p>
 <p>很显然，两个ViewPager的滑动会引发滑动冲突，因此下面就来解决一下滑动冲突所引起的问题。</p>
 <h3 id="手动处理滑动问题"><a href="#手动处理滑动问题" class="headerlink" title="手动处理滑动问题"></a>手动处理滑动问题</h3><p>关于滑动冲突问题，我是通过重写<code>onTouchEvent(MotionEvent arg0)</code>来实现的。</p>
