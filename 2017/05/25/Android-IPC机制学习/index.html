@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/25/Android-IPC机制学习/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
-<meta property="og:updated_time" content="2017-06-01T15:44:45.000Z">
+<meta property="og:updated_time" content="2017-06-12T15:22:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android IPC机制学习">
 <meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
@@ -172,7 +172,7 @@
 <p>12两点其实原因是类似的，Android为每一个进程都分配了一个独立的虚拟机，不同的虚拟机在内存分配上有不同的地址空间，这就导致在不同的虚拟机中访问同一个类的对象会产生多份副本。因此所有运行在不同进程中的四大组件，只要它们需要通过内存来共享数据，那么都会共享失败。2所造成的原因和1类似，既然都不是一块内存，那么不管是锁对象还是锁全局类都无法保证线程同步。</p>
 <p>第3点的原因是因为SharedPreference不支持两个进程同时去执行写操作，这有可能会导致数据丢失。因为SharedPreference底层是通过读写XML文件来实现的，那么并发写肯定会出现问题。</p>
 <p>第4个问题，由于一个组件在新的进程中运行的时候，系统需要在创建新的进程的时候分配独立的虚拟机，相当于启动一个应用，因此又会创建新的Application。</p>
-<h3 id="IPC基础概念介绍"><a href="#IPC基础概念介绍" class="headerlink" title="IPC基础概念介绍"></a>IPC基础概念介绍</h3><p>书中主要介绍了三个概念：Serializable，Parcelable，以及Binder。平时工作中，前两个用的还是比较多的，但是看Binder就很费劲，因此这次就先跟着书上来看，因为上网搜了资料下来看之后，发现好多基本是在罗列代码，很多部分自己实例还是不够。</p>
+<h3 id="IPC基础概念介绍"><a href="#IPC基础概念介绍" class="headerlink" title="IPC基础概念介绍"></a>IPC基础概念介绍</h3><p>书中主要介绍了三个概念：Serializable，Parcelable，以及Binder。平时工作中，前两个用的还是比较多的，但是看Binder就很费劲，因此这次就先跟着书上来看，因为上网搜了资料下来看之后，发现好多基本是在罗列代码，很多部分自己实力还是不够。</p>
 
       
 
