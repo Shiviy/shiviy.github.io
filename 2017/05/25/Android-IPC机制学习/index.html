@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/05/25/Android-IPC机制学习/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
-<meta property="og:updated_time" content="2017-06-12T15:36:33.000Z">
+<meta property="og:updated_time" content="2017-06-12T15:47:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android IPC机制学习">
 <meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
@@ -175,10 +175,15 @@
 <h3 id="IPC基础概念介绍"><a href="#IPC基础概念介绍" class="headerlink" title="IPC基础概念介绍"></a>IPC基础概念介绍</h3><p>书中主要介绍了三个概念：Serializable，Parcelable，以及Binder。平时工作中，前两个用的还是比较多的，但是看Binder就很费劲，因此这次就先跟着书上来看，因为上网搜了资料下来看之后，发现好多基本是在罗列代码，很多部分自己实力还是不够。</p>
 <p>简单的说下以上的3点：</p>
 <ul>
-<li>Serializable：它是Java所提供的一种序列化的接口，它是一个空接口，为对象提供标准的序列化和反序列化操作。它的使用过程也很简单，只需要实现这个接口，然后可以由Android Studio自动生成。</li>
-<li>Parcelable: 它也是一个接口，只要实现这个接口，一个类的对象就可以通过Intent和Binder传递。</li>
-<li>两者之间的区别：Serializable是Java中的序列化接口，使用简单，但是开销很大，序列化和反序列化都需要大量I/O操作。而Parcelable就是Android中的序列化方式，因此更适合用在Android平台上，缺点是使用麻烦，但是效率很高。Parcelable主要用在内存序列化，但是将对象序列化到存储设备中或者将对象序列化后通过网络传输这两种情况使用Parcelable会稍显复杂，因此这两种情况推荐采用Serializable。</li>
-<li>​</li>
+<li><p>Serializable：它是Java所提供的一种序列化的接口，它是一个空接口，为对象提供标准的序列化和反序列化操作。它的使用过程也很简单，只需要实现这个接口，然后可以由Android Studio自动生成。</p>
+</li>
+<li><p>Parcelable: 它也是一个接口，只要实现这个接口，一个类的对象就可以通过Intent和Binder传递。</p>
+</li>
+<li><p>两者之间的区别：Serializable是Java中的序列化接口，使用简单，但是开销很大，序列化和反序列化都需要大量I/O操作。而Parcelable就是Android中的序列化方式，因此更适合用在Android平台上，缺点是使用麻烦，但是效率很高。Parcelable主要用在内存序列化，但是将对象序列化到存储设备中或者将对象序列化后通过网络传输这两种情况使用Parcelable会稍显复杂，因此这两种情况推荐采用Serializable。</p>
+</li>
+<li><p>Binder：Binder是Android中的一个类，它实现了IBinder接口。从IPC角度说Binder是Android中的一种跨进程通信方式，它可以理解为一种虚拟的物理设备，它的设备驱动是/dev/binder，这种通信方式在Linux中没有；从Android Framework角度来说，Binder是ServiceManager连接各种Manager（ActivityManager、WindowManager等）和相应ManagerService的桥梁；从Android应用层来说，Binder是客户端和服务端进行通信的媒介，当bindService的时候，服务端会反悔一个包含了服务端业务调用的Binder对象，通过这个对象，客户端就可以获取服务端提供的服务或者数据，这里的服务包括普通服务和基于AIDL的服务。</p>
+<p>​</p>
+</li>
 </ul>
 
       
