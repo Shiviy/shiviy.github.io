@@ -132,6 +132,59 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android开发View的事件体系理解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/14/Android开发View的事件体系理解/">Android开发View的事件体系理解</a>
+    </h1>
+  
+
+        
+        <a href="/2017/06/14/Android开发View的事件体系理解/" class="archive-article-date">
+  	<time datetime="2017-06-14T14:53:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。</p>
+        
+          <a class="article-more-a" href="/2017/06/14/Android开发View的事件体系理解/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/06/14/Android开发View的事件体系理解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+
+
+
+  
     <article id="post-设计模式之观察者模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -637,72 +690,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2017/05/09/Android的线程和线程池笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android消息机制——MessageQueue解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/03/Android消息机制——MessageQueue解析/">Android消息机制——MessageQueue解析</a>
-    </h1>
-  
-
-        
-        <a href="/2017/05/03/Android消息机制——MessageQueue解析/" class="archive-article-date">
-  	<time datetime="2017-05-03T08:56:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-简述"><a href="#1-简述" class="headerlink" title="1. 简述"></a>1. 简述</h2><p>首先看一下Google官方的简述：Low-level class holding the list of messages to be dispatched by a Looper.  Messages are not added directly to a MessageQueue, but rather through Handler objects associated with the Looper.</p>
-<p>简单翻译一下就是说：MessageQueue是比较低层的类，是持有Message的一个链表（由Looper分发）。Messages不是直接添加到MessageQueue中的，而是通过与Looper相关联的Handler来进行的。</p>
-<p>在Android的消息机制中，MessageQueue最主要的方法就是它的插入和读取方法，分别对应enqueueMessage和next。因此主要分析这两个方法。</p>
-        
-          <a class="article-more-a" href="/2017/05/03/Android消息机制——MessageQueue解析/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Android笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/03/Android消息机制——MessageQueue解析/">展开全文 >></a>
         </p>
       
 
