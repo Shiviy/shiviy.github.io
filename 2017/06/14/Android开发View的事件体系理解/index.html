@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-15T01:47:31.000Z">
+<meta property="og:updated_time" content="2017-06-16T09:39:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -177,9 +177,20 @@
 <h4 id="1-点击事件传递规则"><a href="#1-点击事件传递规则" class="headerlink" title="1. 点击事件传递规则"></a>1. 点击事件传递规则</h4><p>首先要明白的一点是，我们的分析对象是MotionEvent，即点击事件。所谓的事件分发，其实就是对MotionEvent事件的分发过程，当一个MotionEvent产生之后，系统需要把这个事件传递给一个具体的View，这个传递的过程就是分发过程。其中涉及到3个很重要的方法来共同完成事件分发：dispatchTouchEvent、onInterceptTouchEvent和onTouchEvent，下面分别介绍这3个方法。</p>
 <ul>
 <li><p><strong>public boolean dispatchTouchEvent(MotionEvent ev)</strong></p>
-<p>​</p>
+<p>用来进行事件分发，如果事件能够传递给当前View，那么会调用此方法，返回结果表示是否消耗当前事件。</p>
+</li>
+<li><p><strong>public boolean onInterceptTouchEvent(MotionEvent event)</strong></p>
 </li>
 </ul>
+<p>  在dispatchTouchEvent内部调用，用来判断是否拦截某个事件，如果当前的View拦截了某个事件，那么在同一个事件序列中，该方法不会被再次调用，返回结果表示是否拦截当前事件。</p>
+<ul>
+<li><p><strong>public boolean onTouchEvent(MotionEvent event)</strong></p>
+<p>在dispatchTouchEvent中调用，用来处理点击事件，返回结果表示是否消耗当前事件，如果不消耗，则在同一个事件序列中，当前View无法再次接收到事件。</p>
+</li>
+</ul>
+<p>上述3者的关系可以用如下伪代码表示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</div><div class="line">    <span class="keyword">boolean</span> consume = <span class="keyword">false</span>;</div><div class="line">    <span class="keyword">if</span> (onInterceptTouchEvent(ev)) &#123;</div><div class="line">        consume = onTouchEvent(ev);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        consume = child.dispachTouchEvent(ev);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> consume;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对于一个根ViewGroup来说，点击事件产生后，首先会传递给它，这时它的dispatchTouchEvent就会被调用，如果这个ViewGroup的onInterceptTouchEvent返回true则表示要拦截当前事件，接着事件就会交给这个ViewGroup处理，即它的ontouchEvent方法就会被调用。如果onInterceptTouchEvent返回false则表示它不拦截当前事件，那么事件就会继续传递给子元素，然后子元素的dispatchTouchEvent方法被调用，如此反复直到事件被最终处理。</p>
 
       
 
