@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-18T15:32:52.000Z">
+<meta property="og:updated_time" content="2017-06-18T15:44:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -198,7 +198,13 @@
 <li>一般来说一个事件序列只能被一个View拦截且消耗。</li>
 <li>某个View一旦决定拦截，那么只一个事件序列都只能由它来处理，并且它的onInterceptTouchEvent不会再被调用。</li>
 <li>某个View一旦开始处理事件，如果它不消耗ACTION_DOWN事件（onTouchEvent返回了false），那么同一事件序列中的其他事件都不会再交给它来处理，并且事件将重新交给它的父元素去处理。</li>
-<li>​</li>
+<li>如果View不消耗除ACTION_DOWN之外的其他事件，那么这个点击事件会消失，此时父元素的onTouchEvent并不会调用。当前的View可以持续收到后续事件，最终这些消失的点击事件会传递给Activity处理。</li>
+<li>ViewGroup默认不拦截任何事件。</li>
+<li>View没有onInterceptTouchEvent方法，一旦有事件传递给它，那么它的onTouchEvent方法就会被调用。</li>
+<li>View的onTouchEvent默认都会消耗事件（返回true），除非它是不可点击的（clickable和longClickable同时为false）。View的longClickable属性默认都是false。</li>
+<li>View的enable属性不影响onTouchEvent的默认返回值，哪怕一个View是disable状态的，只要它的clickable或者longClickable有一个为true，那么它的onTouchEvent就返回true。</li>
+<li>onClick会发生的前提条件是当前View是可点击的，并且他收到了down和up的事件。</li>
+<li>事件传递过程是由内向外的，即事件总是先传递给父元素，然后再由父亲元素分发给子View，通过requestDisallowInterceptTouchEvent方法可以在子元素中干预父元素的事件分发过程，但是ACTION_DOWN事件除外。</li>
 </ol>
 
       
