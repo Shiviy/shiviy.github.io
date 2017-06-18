@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-18T15:07:55.000Z">
+<meta property="og:updated_time" content="2017-06-18T15:32:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -195,6 +195,9 @@
 <p>一个点击事件产生后，它的传递顺序如下：Activity -&gt; Window -&gt; View。分发机制就是上面所讲的。如果一个View的onTouchEvent返回false，那么它父容器的onTouchEvent将会被调用，以此类推。如果所有元素都不处理这个事件，那么这个事件将会被传递给Activity处理。</p>
 <h4 id="2-一些结论总结"><a href="#2-一些结论总结" class="headerlink" title="2. 一些结论总结"></a>2. 一些结论总结</h4><ol>
 <li>同一个事件序列是指手指接触屏幕那一刻起，到手指离开屏幕的那一刻结束。</li>
+<li>一般来说一个事件序列只能被一个View拦截且消耗。</li>
+<li>某个View一旦决定拦截，那么只一个事件序列都只能由它来处理，并且它的onInterceptTouchEvent不会再被调用。</li>
+<li>某个View一旦开始处理事件，如果它不消耗ACTION_DOWN事件（onTouchEvent返回了false），那么同一事件序列中的其他事件都不会再交给它来处理，并且事件将重新交给它的父元素去处理。</li>
 <li>​</li>
 </ol>
 
