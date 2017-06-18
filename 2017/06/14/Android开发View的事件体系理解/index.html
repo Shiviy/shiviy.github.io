@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-18T15:53:01.000Z">
+<meta property="og:updated_time" content="2017-06-18T16:28:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -208,6 +208,11 @@
 </ol>
 <h3 id="事件分发的源码分析"><a href="#事件分发的源码分析" class="headerlink" title="事件分发的源码分析"></a>事件分发的源码分析</h3><h4 id="1-Activity对点击事件的分发过程"><a href="#1-Activity对点击事件的分发过程" class="headerlink" title="1. Activity对点击事件的分发过程"></a>1. Activity对点击事件的分发过程</h4><p>点击事件用MotionEvent来表示，当一个点击操作发生时，事件最先传递给当前Activity，由Activity的dispatchTouchEvent来进行事件分发，具体的工作是由Activity内部的Window来完成的。Window会将事件传递给decor view，decor view一般就是当前界面的底层容器（setContentView所设置的View的父容器），通过Activity.getWindow.getDecorView()可以获得。下面先来看Activity的dispatchTouchEvent：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;</div><div class="line">        onUserInteraction();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (getWindow().superDispatchTouchEvent(ev)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> onTouchEvent(ev);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>首先是if语句中的<code>getWindow().superDispatchTouchEvent(ev)</code>也就是交给了Activity所附属的Window进行分发，如果返回true，那么整个事件循环就结束了，返回false则表示事件没人处理，所有View的onTouchEvent都返回了false，那么Activity的onTouchEvent就会被调用。</p>
+<p>接下来看Window是如何将事件传递给ViewGroup的。由于Window是一个抽象类，而Window的superDispatchTouchEvent方法也是一个抽象方法，因此需要找到Window的实现类。这个实现类就是PhoneWindow，所以就可以看PhoneWindow是如何处理点击事件的，PhoneWindow的superDispatchTouchEvent方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">superDispatchTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> mDecor.superDispatchTouchEvent(event);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，该方法直接调用了mDecor的superDispatchTouchEvent，这个mDecor是DecorView，也就是说PhoneWindow直接将事件传递给了DecorView。</p>
+<p>通过<code>((ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content)).getChildAt(0)</code>这种方式可以获取Activity所设置的View，这个mDecorView显然就是getWindow().getDecorView()返回的View，我们通过setContentView设置的View是它的一个子View。目前事件传递到了DecorView这里，它继承自FrameLayout并且是父View，因此最总事件会传递给View。自此，事件已经传递到了顶级View，即在Activity中通过setContentView所设置的View，也叫做根View。</p>
 
       
 
