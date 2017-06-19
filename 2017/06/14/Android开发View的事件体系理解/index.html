@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-19T15:53:11.000Z">
+<meta property="og:updated_time" content="2017-06-19T15:58:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -238,6 +238,8 @@
 <p>如果子元素的dispatchTouchEvent返回了true，这时mFirstTouchTarget就会被赋值，同时跳出for循环，如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">newTouchTarget = addTouchTarget(child, idBitsToAssign);</div><div class="line">alreadyDispatchedToNewTouchTarget = <span class="keyword">true</span>;</div><div class="line"><span class="keyword">break</span>;</div></pre></td></tr></table></figure>
 <p>其中<code>addTouchTarget</code>就是对mFirstTouchTarget的赋值，如果自元素的<code>dispatchTouchEvent</code>返回了false，ViewGroup就会把事件分发给下一个子元素。</p>
+<p>再来看一下addTouchTarget这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Adds a touch target for specified child to the beginning of the list.</div><div class="line"> * Assumes the target child is not already present.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> TouchTarget <span class="title">addTouchTarget</span><span class="params">(@NonNull View child, <span class="keyword">int</span> pointerIdBits)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> TouchTarget target = TouchTarget.obtain(child, pointerIdBits);</div><div class="line">    target.next = mFirstTouchTarget;</div><div class="line">    mFirstTouchTarget = target;</div><div class="line">    <span class="keyword">return</span> target;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
       
 
