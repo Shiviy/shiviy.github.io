@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
 <meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNbRwgy1fgl51w6wgej30ks0hsq3x.jpg">
-<meta property="og:updated_time" content="2017-06-19T05:44:08.000Z">
+<meta property="og:updated_time" content="2017-06-19T07:45:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android开发View的事件体系理解">
 <meta name="twitter:description" content="前言前段时间在开发功能时，遇到了许多特殊的需求，比如ViewPager嵌套Viewpager，ScrollView嵌套RecyclerView等，都产生了相应的滑动冲突，因此写这篇博客去深入学习一下View中的一些事件体系，以及View的工作原理。">
@@ -224,6 +224,9 @@
 </li>
 <li>如果顶层的ViewGroup不拦截事件，即onInterceptTouchEvent返回false，则事件会传递到下一级的子View，这时子View的dispatchTouchEvent方法会被调用。接下来的过程和顶层的View的过程是一致的。</li>
 </ul>
+<p>来看ViewGroup的dispatchTouchEvent方法，这个方法比较长，因此分段来看，首先看当前View是否拦截点击事件的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Check for interception.</span></div><div class="line"><span class="keyword">final</span> <span class="keyword">boolean</span> intercepted;</div><div class="line"><span class="keyword">if</span> (actionMasked == MotionEvent.ACTION_DOWN</div><div class="line">        || mFirstTouchTarget != <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> disallowIntercept = (mGroupFlags &amp; FLAG_DISALLOW_INTERCEPT) != <span class="number">0</span>;</div><div class="line">    <span class="keyword">if</span> (!disallowIntercept) &#123;</div><div class="line">        intercepted = onInterceptTouchEvent(ev);</div><div class="line">        ev.setAction(action); <span class="comment">// restore action in case it was changed</span></div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        intercepted = <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// There are no touch targets and this action is not an initial down</span></div><div class="line">    <span class="comment">// so this view group continues to intercept touches.</span></div><div class="line">    intercepted = <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>if的条件中有两种情况会去判断是否需要拦截当前的事件：事件类型为<code>ACTION_DOWN</code>或者<code>mFirstTouchTarget != null</code>主要说一下mFirstTouchTarget这个变量。当事件由ViewGroup的子元素成功处理的时候mFirstTouchTarget会被赋值并指向子元素，也就是说当事件由当前ViewGroup拦截时，mFirstTouchTarget就为空，那么当ACTION_DOWN和ACRION_UP到来的时候，ViewGroup的onInterceptTouchEvent不会再被调用，并且同一序列中的其他事件都会默认交给它处理。</p>
 
       
 
