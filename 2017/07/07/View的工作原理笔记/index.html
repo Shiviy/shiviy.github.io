@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
 <meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg">
-<meta property="og:updated_time" content="2017-07-14T06:27:40.000Z">
+<meta property="og:updated_time" content="2017-07-14T07:01:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="View的工作原理笔记">
 <meta name="twitter:description" content="概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
@@ -161,6 +161,9 @@
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg" alt="3551332-d2a11514bb60f7f8"></p>
 <p>如上图所示，performTraversal会一次调用performMeasure、performLayout、performDraw三个方法，这三个方法分别完成顶级View的measure、layout和draw三大流程，其中在performMeasure中会调用measure方法，在measure中又会调用onMeasure方法。在onMeasure方法中则会对所有的子元素进行measure过程，这个时候measure流程就从父容器传递到子元素中了，这就完成了一次measure过程。接着子元素会重复父容器的measure过程，如此反复就完成了整个View树的遍历。同理，performLayout和performDraw的传递流程类似，不同的是performDraw的传递过程实在draw方法中通过dispatchDraw来实现的，不过这并没有本质区别。</p>
 <p>measure过程决定了View的宽高，Measure完成之后，可以通过getMeasuredWidth和getMeasuredHeight来获取View测量后的宽高，Layout过程决定了View的四个顶点的坐标和实际的View的宽高，完成以后可以通过getTop、getBottom、getLeft和getRight来获取View的四个顶点的位置，并且可以通过getWidth和getHeight方法来拿到View的最终宽高。而Draw过程决定了View的显示，只有draw方法完成以后，View的内容才会显示到屏幕上。</p>
+<p>以上是ViewRoot的一些概念，接下来看一下DecorView，它实际上继承自FrameLayout：</p>
+<pre><code>![98CD0C1E-AE8F-4D3E-8B77-4F256B5C96DD](/Users/leo/Desktop/98CD0C1E-AE8F-4D3E-8B77-4F256B5C96DD.png)
+</code></pre><p>大致示意图如上，作为一个顶级的View，一般情况下它内部会包含有一个竖直方向的LinearLayout，在这个LinearLayout中有上下两部分，如图所示分别是标题栏和内容栏。在Activity中我们通过setContentView方法设置的layout布局实际上就是被添加到了id为content的FrameLayout中。可以通过<code>ViewGroup content = findViewById(R.android.id.content)</code>来获取到content，通过<code>content.getChildAt(0)</code>来获取到我们设置的View。</p>
 
       
 
