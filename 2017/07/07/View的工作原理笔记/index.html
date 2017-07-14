@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>View的工作原理笔记 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
+  <meta name="description" content="1. 概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="View的工作原理笔记">
 <meta property="og:url" content="http://yoursite.com/2017/07/07/View的工作原理笔记/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
+<meta property="og:description" content="1. 概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
 <meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg">
-<meta property="og:updated_time" content="2017-07-14T07:01:22.000Z">
+<meta property="og:updated_time" content="2017-07-14T08:19:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="View的工作原理笔记">
-<meta name="twitter:description" content="概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
+<meta name="twitter:description" content="1. 概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
 <meta name="twitter:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
@@ -153,9 +153,9 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。</p>
+        <h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h3><p>关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。</p>
 <a id="more"></a>
-<h3 id="ViewRoot和DecorView"><a href="#ViewRoot和DecorView" class="headerlink" title="ViewRoot和DecorView"></a>ViewRoot和DecorView</h3><p>在View之前，首先来看下ViewRoot和DecorView的概念。</p>
+<h3 id="2-ViewRoot和DecorView"><a href="#2-ViewRoot和DecorView" class="headerlink" title="2. ViewRoot和DecorView"></a>2. ViewRoot和DecorView</h3><p>在View之前，首先来看下ViewRoot和DecorView的概念。</p>
 <p>第一个是ViewRoot，它对应于ViewRootImpl类，它是链接WindowManager和DecorView的纽带，View的三大流程都是通过ViewRoot来完成的。在ActivityThread中，当Activity对象被创建完毕后，会将DecorView添加到Window中，同时会创建ViewRootImpl对象，并将ViewRootImpl对象和DecorView建立关联。</p>
 <p>View的绘制流程是从ViewRoot的performTraversals方法开始的，它经过measure、layout、和draw三个过程，最终将一个View绘制出来，其中measure用来测量View的宽和高，layout用来确定View在父容器中的位置，而draw则负责将View绘制在屏幕上。大致的流程如下：</p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg" alt="3551332-d2a11514bb60f7f8"></p>
@@ -164,6 +164,16 @@
 <p>以上是ViewRoot的一些概念，接下来看一下DecorView，它实际上继承自FrameLayout：</p>
 <pre><code>![98CD0C1E-AE8F-4D3E-8B77-4F256B5C96DD](/Users/leo/Desktop/98CD0C1E-AE8F-4D3E-8B77-4F256B5C96DD.png)
 </code></pre><p>大致示意图如上，作为一个顶级的View，一般情况下它内部会包含有一个竖直方向的LinearLayout，在这个LinearLayout中有上下两部分，如图所示分别是标题栏和内容栏。在Activity中我们通过setContentView方法设置的layout布局实际上就是被添加到了id为content的FrameLayout中。可以通过<code>ViewGroup content = findViewById(R.android.id.content)</code>来获取到content，通过<code>content.getChildAt(0)</code>来获取到我们设置的View。</p>
+<h3 id="3-MeasureSpec"><a href="#3-MeasureSpec" class="headerlink" title="3. MeasureSpec"></a>3. MeasureSpec</h3><p>MeasureSpec是View中的一个内部类，它代表一个32位的int值，高2位代表SpecMode，低30位代表SpecSize。SpecMode指测量模式，二SpecSize则是指在某种测量模式下的规格大小。MeasureSpec的一些常量定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_SHIFT = <span class="number">30</span>;</div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_MASK  = <span class="number">0x3</span> &lt;&lt; MODE_SHIFT;</div><div class="line"></div><div class="line"><span class="comment">/** <span class="doctag">@hide</span> */</span></div><div class="line"><span class="meta">@IntDef</span>(&#123;UNSPECIFIED, EXACTLY, AT_MOST&#125;)</div><div class="line"><span class="meta">@Retention</span>(RetentionPolicy.SOURCE)</div><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MeasureSpecMode &#123;&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Measure specification mode: The parent has not imposed any constraint</div><div class="line"> * on the child. It can be whatever size it wants.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNSPECIFIED = <span class="number">0</span> &lt;&lt; MODE_SHIFT;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Measure specification mode: The parent has determined an exact size</div><div class="line"> * for the child. The child is going to be given those bounds regardless</div><div class="line"> * of how big it wants to be.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> EXACTLY     = <span class="number">1</span> &lt;&lt; MODE_SHIFT;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Measure specification mode: The child can be as large as it wants up</div><div class="line"> * to the specified size.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> AT_MOST     = <span class="number">2</span> &lt;&lt; MODE_SHIFT;</div></pre></td></tr></table></figure>
+<p>MeasureSpec通过奖SpecMode和SpecSize打包成一个int值来避免过多的内存分配，并提供了打包和解包方法。</p>
+<p>从上面的代码中可以看出SpecMode一共有三种类型：</p>
+<p><strong>UNSPECIFIED</strong></p>
+<p>父容器不对View有任何限制，要多大有多大，这种情况一般用于系统内部，表示一种测量状态。</p>
+<p><strong>EXACTLY</strong></p>
+<p>父容器已经给出了View所需要的精确大小，这个时候View的最终大小就是SpecSize所指定的值，它对应于LayoutParams中的match_parent和具体数值这两种模式。</p>
+<p><strong>AT_MOST</strong></p>
+<p>父容器制定了一个可用大小即SpecSize，View的大小不能大雨这个值，具体什么要看不同View的具体实现，这个对应于LayoutParams中的wrap_content。</p>
 
       
 
