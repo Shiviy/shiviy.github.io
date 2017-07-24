@@ -14,7 +14,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/18/OkHttp+Retrofit学习/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="概述最近在做一个新的项目，涉及到了网络框架的部分，我们项目采用OkHttp和Retrofit来实现网络请求。这里写一下相关的学习内容。大致包括了Android的网络部分。">
-<meta property="og:updated_time" content="2017-07-18T11:37:41.000Z">
+<meta property="og:updated_time" content="2017-07-18T11:42:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OkHttp+Retrofit学习">
 <meta name="twitter:description" content="概述最近在做一个新的项目，涉及到了网络框架的部分，我们项目采用OkHttp和Retrofit来实现网络请求。这里写一下相关的学习内容。大致包括了Android的网络部分。">
@@ -154,6 +154,7 @@
         <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>最近在做一个新的项目，涉及到了网络框架的部分，我们项目采用OkHttp和Retrofit来实现网络请求。这里写一下相关的学习内容。大致包括了Android的网络部分。</p>
 <a id="more"></a>
 <h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>首先要说一个概念，很多人分不清OkHttp和Retrofit的区别，Volley, Retrofit, android-async-http 帮你封装了具体的请求，线程切换以及数据转换。它们可以算是网络的框架，而OkHttp是基于http协议封装的一套请求客户端，它更偏向于请求，和HttpClient和HttpUrlConnection的职责是一样的。</p>
+<p>既然OkHttp类似于HttpUrlConnection的话，那么项目中使用OkHttp肯定还是需要自己再去封装一层的，这样的话，我们就选择Retrofit这个框架，同样是由Square推出的一个开源框架</p>
 
       
 

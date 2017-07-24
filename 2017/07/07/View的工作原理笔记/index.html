@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="1. 概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
 <meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fhj90d3on8j30lu0bbab9.jpg">
-<meta property="og:updated_time" content="2017-07-17T10:30:37.000Z">
+<meta property="og:updated_time" content="2017-07-24T05:13:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="View的工作原理笔记">
 <meta name="twitter:description" content="1. 概述关于View的工作原理，一直觉得很重要，配合上一篇的View的事件体系，就可以大致知道整个View的流程。所以这篇就来做一下View的工作原理的学习笔记。">
@@ -174,6 +174,7 @@
 <p>父容器已经给出了View所需要的精确大小，这个时候View的最终大小就是SpecSize所指定的值，它对应于LayoutParams中的match_parent和具体数值这两种模式。</p>
 <p><strong>AT_MOST</strong></p>
 <p>父容器制定了一个可用大小即SpecSize，View的大小不能大雨这个值，具体什么要看不同View的具体实现，这个对应于LayoutParams中的wrap_content。</p>
+<h3 id="4-MeasureSpec和LayoutParams的对应关系"><a href="#4-MeasureSpec和LayoutParams的对应关系" class="headerlink" title="4. MeasureSpec和LayoutParams的对应关系"></a>4. MeasureSpec和LayoutParams的对应关系</h3><p>在给View设置了LayoutParams之后，在View测量的时候，系统会将LayoutParams在父容器的约束下转换成对应的MeasureSpec，然后再根据这个MeasureSpec来确定View测量后的宽高。LayoutParams和父容器一起决定了View的MeasureSpec，另外对于顶级View（DecorView）和普通View来说，MeasureSpec的转换过程略有不同。对于DecorView，MeasureSpec由窗口的尺寸和自身的LayoutParams来共同决定，对于普通的View来说，MeasureSpec由夫荣妻的MeasureSpec和自身的LayoutParams来共同决定，MeasureSpec一旦确定之后，onMeasure中就可以确定View动测量宽高。</p>
 
       
 
