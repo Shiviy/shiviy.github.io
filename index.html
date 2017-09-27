@@ -208,6 +208,16 @@
 <p>重写View的layout方法，代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">layout</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.layout(l, t, r + <span class="number">100</span>, b + <span class="number">100</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>上述代码会导致在任何情况下View的最终宽高总是比测量框高大100px，虽然这样会导致View显示不正常并且也没有实际意义，但是证明了测量宽高的确可以不等于最终宽高。另一种情况是在某些情形下，View需要多次measure才能确定自己的测量宽高，在前几次的测量过程中，其得出的测量宽高可能和最终宽高不一致，但最终来说，测量宽高还是和最终宽高相同。</p>
+<h4 id="3-draw过程"><a href="#3-draw过程" class="headerlink" title="3 draw过程"></a>3 draw过程</h4><p>draw的过程就比较简单了，它的作用是将View绘制到屏幕上面。View的绘制过程遵循如下几步：</p>
+<ul>
+<li>绘制背景 backgroun.draw(canvas)</li>
+<li>绘制自己 onDraw</li>
+<li>绘制children (dispatchDraw)</li>
+<li>绘制装饰 (onDrawScrollBars)</li>
+</ul>
+<p>View绘制过程的传递是通过dispatchDraw来实现的，dispatchDraw会遍历调用所有子元素的draw方法，如此draw事件就一层层传递下去。View有一个特殊的方法，setWillNotDraw方法如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * If this view doesn't do any drawing on its own, set this flag to</div><div class="line"> * allow further optimizations. By default, this flag is not set on</div><div class="line"> * View, but could be set on some View subclasses such as ViewGroup.</div><div class="line"> *</div><div class="line"> * Typically, if you override &#123;<span class="doctag">@link</span> #onDraw(android.graphics.Canvas)&#125;</div><div class="line"> * you should clear this flag.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> willNotDraw whether or not this View draw on its own</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setWillNotDraw</span><span class="params">(<span class="keyword">boolean</span> willNotDraw)</span> </span>&#123;</div><div class="line">    setFlags(willNotDraw ? WILL_NOT_DRAW : <span class="number">0</span>, DRAW_MASK);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注释中可以看出，如果一个View不需要绘制任何内容，那么设置这个标记位为true以后，系统会进行相应的优化。默认情况下，View没有启用这个优化标记位，但是ViewGroup会默认启用这个优化标记位。这个标记位对于开发的意义是：当我们的自定义控件继承于ViewGroup并且本身不具备绘制功能时，就可以开启这个标记位，从而便于系统进行后续的优化。当明确知道一个ViewGroup需要通过onDraw来绘制内容时，需要显式关闭WILL_NOT_DRAW这个标记位。</p>
 
       
 
