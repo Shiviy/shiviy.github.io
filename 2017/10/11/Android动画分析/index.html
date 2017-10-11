@@ -6,16 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Leo&#39;s Blog</title>
+  <title>Android动画分析 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="This is a blog that record my learning of Android">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Leo's Blog">
-<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android动画分析">
+<meta property="og:url" content="http://yoursite.com/2017/10/11/Android动画分析/index.html">
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="This is a blog that record my learning of Android">
+<meta property="og:updated_time" content="2017-10-11T05:25:36.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Leo's Blog">
+<meta name="twitter:title" content="Android动画分析">
 <meta name="twitter:description" content="This is a blog that record my learning of Android">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
@@ -130,112 +131,50 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Android-Bitmap的加载和缓存策略" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Android动画分析" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/16/Android-Bitmap的加载和缓存策略/">Android Bitmap的加载和缓存策略</a>
+    <h1 class="article-title" itemprop="name">
+      Android动画分析
     </h1>
   
 
         
-        <a href="/2017/05/16/Android-Bitmap的加载和缓存策略/" class="archive-article-date">
-  	<time datetime="2017-05-16T13:27:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-16</time>
+        <a href="/2017/10/11/Android动画分析/" class="archive-article-date">
+  	<time datetime="2017-10-11T05:25:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-11</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>本篇记录一下Android开发艺术探索的Bitmap的相关知识。</p>
-        
-          <a class="article-more-a" href="/2017/05/16/Android-Bitmap的加载和缓存策略/#more">more >></a>
         
       
 
       
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Android开发艺术探索笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/16/Android-Bitmap的加载和缓存策略/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android-线程池解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/15/Android-线程池解析/">Android 线程池解析</a>
-    </h1>
-  
-
-        
-        <a href="/2017/05/15/Android-线程池解析/" class="archive-article-date">
-  	<time datetime="2017-05-15T10:57:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>接上一篇<a href="https://shiviy.github.io/2017/05/09/Android的线程和线程池笔记/">Android的线程和线程池笔记</a>本篇介绍Android中的线程池</p>
-<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先是线程池的优点：</p>
-<ol>
-<li>重用线程池中的线程，避免因为线程的创建和销毁所带来的新能开销。</li>
-<li>有效控制线程池的最大并发数，从而避免大量的线程之间因互相抢占系统资源而导致的阻塞现象。</li>
-<li>对线程进行简单的管理，提供定时执行以及指定间隔循环执行等功能。</li>
-</ol>
-<p>Android中的线程池等概念来源于Java中的Executor，Executor是一个接口，真正的线程池的实现为ThreadPoolExecutor，它提供了一系列的参数来配置线程池，从线程池的功能特性来说，Android的线程池主要分为4类，可以通过Executors所提供的工厂方法来得到，它们分别是：</p>
-<ol>
-<li>FixedThreadPool</li>
-<li>CachedThreadPool</li>
-<li>ScheduledThreadPool</li>
-<li>SingleThreadPool</li>
-</ol>
-<p>Android中的线程池都是直接或者间接通过配置ThreadPoolExecutor来实现的 ，因此首先来看ThreadPoolExecutor。</p>
-        
-          <a class="article-more-a" href="/2017/05/15/Android-线程池解析/#more">more >></a>
-        
-      
-
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -244,18 +183,74 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/15/Android-线程池解析/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/10/11/Android动画分析/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
-
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2017/08/19/Android-View的工作流程/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Android View的工作流程</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
 
 
 
@@ -263,526 +258,10 @@
 
 
   
-    <article id="post-Android-IntentService使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/14/Android-IntentService使用/">Android IntentService使用</a>
-    </h1>
+    <div class="duoshuo"></div>
   
 
-        
-        <a href="/2017/05/14/Android-IntentService使用/" class="archive-article-date">
-  	<time datetime="2017-05-14T13:32:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>之前在读书笔记中介绍到了IntentService，现在就来使用一下IntentService来写一个Demo，模拟图片的上传。</p>
-        
-          <a class="article-more-a" href="/2017/05/14/Android-IntentService使用/#more">more >></a>
-        
-      
 
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/14/Android-IntentService使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android的线程和线程池笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/09/Android的线程和线程池笔记/">Android的线程和线程池笔记</a>
-    </h1>
-  
-
-        
-        <a href="/2017/05/09/Android的线程和线程池笔记/" class="archive-article-date">
-  	<time datetime="2017-05-09T08:23:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>记录一下11章Android的线程和线程池的学习过程。</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ul>
-<li>线程是Android中的一个很重要的概念，从用途上来说，线程分为主线程和子线程，主线程主要处理界面相关的事情，而子线程则往往用于执行耗时的操作。</li>
-<li>Android中可以扮演线程的角色还有很多，比如AsyncTask和IntentService，同时HandlerThread也是一种特殊的线程。对于AsyncTask来说，它的底层用到了线程池，对于IntentService和HandlerThread来说，它们的底层则直接使用了线程。</li>
-<li>在操作系统中，线程是操作系统调度的最小单元，线程是一种受限制的系统资源，不能无限制地产生，并且线程的创建和销毁都会有相应的开销。如果在一个进程中频繁地创建和销毁线程，则应该采用线程池。</li>
-<li>线程池中会缓存一定数量的线程，通过线程池可以避免因为频繁创建和销毁线程所带来的系统开销，Android中的线程池来源于Java，主要通过Executor来派生特定类型的线程池。</li>
-</ul>
-        
-          <a class="article-more-a" href="/2017/05/09/Android的线程和线程池笔记/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/09/Android的线程和线程池笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android消息机制——MessageQueue解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/03/Android消息机制——MessageQueue解析/">Android消息机制——MessageQueue解析</a>
-    </h1>
-  
-
-        
-        <a href="/2017/05/03/Android消息机制——MessageQueue解析/" class="archive-article-date">
-  	<time datetime="2017-05-03T08:56:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-简述"><a href="#1-简述" class="headerlink" title="1. 简述"></a>1. 简述</h2><p>首先看一下Google官方的简述：Low-level class holding the list of messages to be dispatched by a Looper.  Messages are not added directly to a MessageQueue, but rather through Handler objects associated with the Looper.</p>
-<p>简单翻译一下就是说：MessageQueue是比较低层的类，是持有Message的一个链表（由Looper分发）。Messages不是直接添加到MessageQueue中的，而是通过与Looper相关联的Handler来进行的。</p>
-<p>在Android的消息机制中，MessageQueue最主要的方法就是它的插入和读取方法，分别对应enqueueMessage和next。因此主要分析这两个方法。</p>
-        
-          <a class="article-more-a" href="/2017/05/03/Android消息机制——MessageQueue解析/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Android笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/03/Android消息机制——MessageQueue解析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-ThreadLocal解析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/02/ThreadLocal解析/">ThreadLocal解析</a>
-    </h1>
-  
-
-        
-        <a href="/2017/05/02/ThreadLocal解析/" class="archive-article-date">
-  	<time datetime="2017-05-02T10:01:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="ThreadLocal简介"><a href="#ThreadLocal简介" class="headerlink" title="ThreadLocal简介"></a>ThreadLocal简介</h2><p>首先介绍下什么是ThreadLocal，官方给出的介绍如下：</p>
-<blockquote>
-<p>This class provides thread-local variables.  These variables differ from their normal counterparts in that each thread that accesses one (via its get or set method) has its own, independently initialized copy of the variable.  ThreadLocal instances are typically private static fields in classes that wish to associate state with a thread (e.g., a user ID or Transaction ID).</p>
-</blockquote>
-<p>翻译过来就是说：这个类提供了线程内部的局部变量，这些局部变量不同于它们普通的副本，因为每个其的线程（通过get或者set方法）都有自己的独立的变量。一般来说ThreadLocal都是private static的，用于关联线程。（英语比较蹩脚）</p>
-<p>总结来说，ThreadLocal的作用就是提供线程内的局部变量，通过它可以在线程内部存储数据，只有在指定的线程中才可以获取到存储到数据，而其他的线程则不可以。用ThreadLocal可以实现一些比较复杂的功能，比如某些数据是以线程为作用域，并且不同线程有不同数据副本的时候，就可以采用ThreadLocal，比如Looper、ActivityThread、AMS等。另一个使用场景就是复杂逻辑下的对象传递，比如监听器的传递。</p>
-        
-          <a class="article-more-a" href="/2017/05/02/ThreadLocal解析/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Android源码分析</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/05/02/ThreadLocal解析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android的消息机制笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/16/Android的消息机制笔记/">Android的消息机制笔记</a>
-    </h1>
-  
-
-        
-        <a href="/2017/04/16/Android的消息机制笔记/" class="archive-article-date">
-  	<time datetime="2017-04-16T09:04:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>记录一下Android开发艺术探索中第10章 Android的消息机制的笔记</p>
-        
-          <a class="article-more-a" href="/2017/04/16/Android的消息机制笔记/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android开发艺术探索Note</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/16/Android的消息机制笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-2017学习目标" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/16/2017学习目标/">2017学习目标</a>
-    </h1>
-  
-
-        
-        <a href="/2017/04/16/2017学习目标/" class="archive-article-date">
-  	<time datetime="2017-04-16T07:03:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>转眼已是17年4月份，不想让17年年初的时候定下的目标到最后又被搁置，现在记录一下以后的学习目标，这个目标也是跟着知乎上面的一位大神的学习脚步来的。大致为一下几步：</p>
-<ul>
-<li>1.深入Android系统 （目前正在这个阶段）</li>
-<li>2.深入Java</li>
-<li>3.了解编译原理，数据结构算法等CS基础知识</li>
-<li>4.了解Linux kernel</li>
-</ul>
-        
-          <a class="article-more-a" href="/2017/04/16/2017学习目标/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习目标</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/16/2017学习目标/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-贝塞尔曲线绘制动画路径" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/30/贝塞尔曲线绘制动画路径/">贝塞尔曲线绘制动画路径</a>
-    </h1>
-  
-
-        
-        <a href="/2017/03/30/贝塞尔曲线绘制动画路径/" class="archive-article-date">
-  	<time datetime="2017-03-30T14:32:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近工作中需要做一个曲线的动画，记录下学习的过程。</p>
-<h1 id="1-贝塞尔曲线介绍"><a href="#1-贝塞尔曲线介绍" class="headerlink" title="1. 贝塞尔曲线介绍"></a>1. 贝塞尔曲线介绍</h1><h3 id="1-1百度百科介绍如下："><a href="#1-1百度百科介绍如下：" class="headerlink" title="1.1百度百科介绍如下："></a>1.1百度百科介绍如下：</h3><p>贝塞尔曲线(Bézier curve)，又称贝兹曲线或贝济埃曲线，是应用于二维图形应用程序的数学曲线。一般的矢量图形软件通过它来精确画出曲线，贝兹曲线由线段与节点组成，节点是可拖动的支点，线段像可伸缩的皮筋，我们在绘图工具上看到的钢笔工具就是来做这种矢量曲线的。贝塞尔曲线是计算机图形学中相当重要的参数曲线，在一些比较成熟的位图软件中也有贝塞尔曲线工具，如PhotoShop等。在Flash4中还没有完整的曲线工具，而在Flash5里面已经提供出贝塞尔曲线工具。</p>
-        
-          <a class="article-more-a" href="/2017/03/30/贝塞尔曲线绘制动画路径/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/03/30/贝塞尔曲线绘制动画路径/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-工作中问题总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/29/工作中问题总结/">工作中问题总结</a>
-    </h1>
-  
-
-        
-        <a href="/2017/03/29/工作中问题总结/" class="archive-article-date">
-  	<time datetime="2017-03-29T11:52:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><p>​    记录一下平时工作时遇到的比较奇怪的问题。</p>
-<ul>
-<li>在使用PopupWindow时，带有navigation bar的手机出现了底部navigation bar将弹出的PopupWindow遮挡住，使用的Android版本在5.0以上。解决方法如下：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);</div></pre></td></tr></table></figure>
-<p>将PopupWindow添加上述属性即可。</p>
-<ul>
-<li>2017/5/24 今日在工作中遇到了一个Fragment不初始化的问题：</li>
-</ul>
-<p>在一个Activity中，有5个自定义的ViewPager，由于在自定义布局中的ViewPager的ID是相同的，因此导致只有第一个ViewPager的Fragment会初始化。</p>
-<p>导致以上问题的原因就在于FragmentPagerAdapter中的instantiateItem函数中FragmentManager以container的id加fragment的position为标记。导致第一个ViewPager的position初始化后进了缓存，第二个ViewPager的position1就直接从缓存中获取数据:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">instantiateItem</span><span class="params">(ViewGroup container, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mCurTransaction == <span class="keyword">null</span>) &#123;</div><div class="line">        mCurTransaction = mFragmentManager.beginTransaction();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> itemId = getItemId(position);</div><div class="line"></div><div class="line">    <span class="comment">// Do we already have this fragment?</span></div><div class="line">    String name = makeFragmentName(container.getId(), itemId);</div><div class="line">    Fragment fragment = mFragmentManager.findFragmentByTag(name);</div><div class="line">    <span class="keyword">if</span> (fragment != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Attaching item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.attach(fragment);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        fragment = getItem(position);</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Adding item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.add(container.getId(), fragment,</div><div class="line">                makeFragmentName(container.getId(), itemId));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (fragment != mCurrentPrimaryItem) &#123;</div><div class="line">        fragment.setMenuVisibility(<span class="keyword">false</span>);</div><div class="line">        fragment.setUserVisibleHint(<span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> fragment;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>以上container.getId()就是fragment父控件的ID</p>
-<p>所以解决的方法有两种</p>
-<ol>
-<li>重写一个PagerAdapter，自己修改makeFragmentName的规则</li>
-<li>给每一个Fragment的父控件设置不同的ID</li>
-</ol>
-<p>在此次遇到的问题中，由于ViewPager的数量比较少，因此采用了第二种方法，给每个ViewPager在代码中setId，解决了问题。</p>
-<ul>
-<li>ViewPager调用NotifyDataSetChanged不更新页面</li>
-</ul>
-<p>在项目中涉及到了对ViewPager的更新，但是在调用NotifyDataSetChanged方法之后，发现无效，经过各方查找，发现问题原因如下：</p>
-<p><strong>没有重载getItemPosition()函数</strong></p>
-<p>首先来看一下notifyDataSetChanged()的作用：</p>
-<p>在数据集发生变化的时候，一般 Activity 会调用 PagerAdapter.notifyDataSetChanged()，以通知 PagerAdapter，而 PagerAdapter 则会通知在自己这里<a href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.1.1_r1/android/support/v4/view/PagerAdapter.java#PagerAdapter.registerDataSetObserver%28android.database.DataSetObserver%29" target="_blank" rel="external">注册过</a>的所有 <a href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.1.1_r1/android/database/DataSetObserver.java#DataSetObserver" target="_blank" rel="external">DataSetObserver</a>。其中之一就是在 ViewPager.setAdapter() 中注册过的 PageObserver。PageObserver 则进而调用 ViewPager.dataSetChanged()，从而导致 ViewPager 开始触发更新其内含 View 的操作。</p>
-<p>再来看getItemPosition()函数：</p>
-<p>该函数默认直接返回 POSITION_UNCHANGED，从而导致ViewPager.dataSetChanged()被调用时，认为不必触发PagerAdapter.instantiateItem()，因此导致调用了notifyDataSetChanged后什么都没有发生。</p>
-<p>所以解决办法就是</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemPosition</span><span class="params">(Object object)</span> </span>&#123;</div><div class="line">     <span class="keyword">return</span> PagerAdapter.POSITION_NONE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/03/29/工作中问题总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-  
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
-    </nav>
-  
 
 
           </div>
@@ -804,8 +283,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
