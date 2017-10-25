@@ -132,6 +132,59 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-LruCache的实现原理分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/17/LruCache的实现原理分析/">LruCache的实现原理分析</a>
+    </h1>
+  
+
+        
+        <a href="/2017/05/17/LruCache的实现原理分析/" class="archive-article-date">
+  	<time datetime="2017-05-16T16:04:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Android开发艺术探索上并没有对LruCache的实现方法以及原理作出介绍，我觉得有必要去了解一下LruCache的具体实现，因此记录一下学习过程。</p>
+        
+          <a class="article-more-a" href="/2017/05/17/LruCache的实现原理分析/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/05/17/LruCache的实现原理分析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+
+
+
+  
     <article id="post-Android-Bitmap的加载和缓存策略" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -681,86 +734,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2017/03/30/贝塞尔曲线绘制动画路径/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-工作中问题总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/29/工作中问题总结/">工作中问题总结</a>
-    </h1>
-  
-
-        
-        <a href="/2017/03/29/工作中问题总结/" class="archive-article-date">
-  	<time datetime="2017-03-29T11:52:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h1><p>​    记录一下平时工作时遇到的比较奇怪的问题。</p>
-<ul>
-<li>在使用PopupWindow时，带有navigation bar的手机出现了底部navigation bar将弹出的PopupWindow遮挡住，使用的Android版本在5.0以上。解决方法如下：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);</div></pre></td></tr></table></figure>
-<p>将PopupWindow添加上述属性即可。</p>
-<ul>
-<li>2017/5/24 今日在工作中遇到了一个Fragment不初始化的问题：</li>
-</ul>
-<p>在一个Activity中，有5个自定义的ViewPager，由于在自定义布局中的ViewPager的ID是相同的，因此导致只有第一个ViewPager的Fragment会初始化。</p>
-<p>导致以上问题的原因就在于FragmentPagerAdapter中的instantiateItem函数中FragmentManager以container的id加fragment的position为标记。导致第一个ViewPager的position初始化后进了缓存，第二个ViewPager的position1就直接从缓存中获取数据:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">instantiateItem</span><span class="params">(ViewGroup container, <span class="keyword">int</span> position)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mCurTransaction == <span class="keyword">null</span>) &#123;</div><div class="line">        mCurTransaction = mFragmentManager.beginTransaction();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> itemId = getItemId(position);</div><div class="line"></div><div class="line">    <span class="comment">// Do we already have this fragment?</span></div><div class="line">    String name = makeFragmentName(container.getId(), itemId);</div><div class="line">    Fragment fragment = mFragmentManager.findFragmentByTag(name);</div><div class="line">    <span class="keyword">if</span> (fragment != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Attaching item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.attach(fragment);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        fragment = getItem(position);</div><div class="line">        <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">"Adding item #"</span> + itemId + <span class="string">": f="</span> + fragment);</div><div class="line">        mCurTransaction.add(container.getId(), fragment,</div><div class="line">                makeFragmentName(container.getId(), itemId));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (fragment != mCurrentPrimaryItem) &#123;</div><div class="line">        fragment.setMenuVisibility(<span class="keyword">false</span>);</div><div class="line">        fragment.setUserVisibleHint(<span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> fragment;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>以上container.getId()就是fragment父控件的ID</p>
-<p>所以解决的方法有两种</p>
-<ol>
-<li>重写一个PagerAdapter，自己修改makeFragmentName的规则</li>
-<li>给每一个Fragment的父控件设置不同的ID</li>
-</ol>
-<p>在此次遇到的问题中，由于ViewPager的数量比较少，因此采用了第二种方法，给每个ViewPager在代码中setId，解决了问题。</p>
-<ul>
-<li>ViewPager调用NotifyDataSetChanged不更新页面</li>
-</ul>
-<p>在项目中涉及到了对ViewPager的更新，但是在调用NotifyDataSetChanged方法之后，发现无效，经过各方查找，发现问题原因如下：</p>
-<p><strong>没有重载getItemPosition()函数</strong></p>
-<p>首先来看一下notifyDataSetChanged()的作用：</p>
-<p>在数据集发生变化的时候，一般 Activity 会调用 PagerAdapter.notifyDataSetChanged()，以通知 PagerAdapter，而 PagerAdapter 则会通知在自己这里<a href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.1.1_r1/android/support/v4/view/PagerAdapter.java#PagerAdapter.registerDataSetObserver%28android.database.DataSetObserver%29" target="_blank" rel="external">注册过</a>的所有 <a href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/4.1.1_r1/android/database/DataSetObserver.java#DataSetObserver" target="_blank" rel="external">DataSetObserver</a>。其中之一就是在 ViewPager.setAdapter() 中注册过的 PageObserver。PageObserver 则进而调用 ViewPager.dataSetChanged()，从而导致 ViewPager 开始触发更新其内含 View 的操作。</p>
-<p>再来看getItemPosition()函数：</p>
-<p>该函数默认直接返回 POSITION_UNCHANGED，从而导致ViewPager.dataSetChanged()被调用时，认为不必触发PagerAdapter.instantiateItem()，因此导致调用了notifyDataSetChanged后什么都没有发生。</p>
-<p>所以解决办法就是</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getItemPosition</span><span class="params">(Object object)</span> </span>&#123;</div><div class="line">     <span class="keyword">return</span> PagerAdapter.POSITION_NONE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/03/29/工作中问题总结/">展开全文 >></a>
         </p>
       
 
