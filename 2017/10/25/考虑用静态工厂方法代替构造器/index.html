@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的静态工厂方法，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：
 123public static Boolean valueOf(boolean b) &amp;#123;    return (">
-<meta property="og:updated_time" content="2017-10-25T08:58:07.000Z">
+<meta property="og:updated_time" content="2017-10-30T07:24:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="考虑用静态工厂方法代替构造器">
 <meta name="twitter:description" content="对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的静态工厂方法，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：
@@ -156,11 +156,30 @@
       
         <p>对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的<strong>静态工厂方法</strong>，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title">valueOf</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> (b ? TRUE : FALSE);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>类可以通过静态工厂方法来提供它的客户端，而不是通过构造器，这样做具有几大优势：</p>
 <ul>
-<li>它们有名称</li>
-<li>不必在每次调用它们的时候都创建一个心对象</li>
-<li>它们可以返回原返回类型的任何子类型的对象</li>
+<li><p>它们有名称</p>
+<p>对于同一个对象，它们的构造函数的名称是一样的，如果构造器的参数本身没有确切的描述被正确返回的对象，那么具有适当名称的静态工厂会更容易使用，产生的客户端代码也会更容易阅读。</p>
+</li>
+<li><p>不必在每次调用它们的时候都创建一个心对象</p>
+<p>这可以将构建好的实例缓存起来，进行重复使用，从而避免创建不必要的重复对象。例如<code>Boolean.valueOf(boolean)</code>，它从来不创建对象。更多的应用是在单例模式中，调用单例模式的方法，每次返回的对象都是同一个。</p>
+</li>
+<li><p>它们可以返回原返回类型的任何子类型的对象</p>
+<p>这样我们在选择返回对象的类时就有了更大的灵活性，最常见的例子就是Java中Arrays提供的asList方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">asList</span><span class="params">(T... a)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;&gt;(a);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上述方法中，返回的是List对象，但是List是一个接口，返回的实例是具体哪一个，对于调用者来说是不可见的。</p>
+<p>注意：这里的ArrayList是Array的一个内部类。</p>
+<p>这个主要根据传入工厂静态方法的参数来实现，只要是已声名的返回类型的子类型，都是可以的。这为我们选择返回对象的类型提供了灵活性。</p>
+</li>
+<li><p>在创建参数化实例类型的时候，使代码变得更加简洁</p>
+<p>在低啊用参数化类的构造器时，即使类型参数很明显，也必须指明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Map&lt;String, List&lt;String&gt;&gt; m = <span class="keyword">new</span> HashMap&lt;String, List&lt;String&gt;&gt;();</div></pre></td></tr></table></figure>
+<p>随着参数类型变的越来越长，越来越复杂，这样就显得很冗长。但是可以通过静态工厂方法，编译器可以替你找到参数类型，这被称作类型推到。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;K, V&gt; <span class="function">HashMap&lt;K, V&gt; <span class="title">newInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> HashMap&lt;K, V&gt;();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建对象的时候只需要：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</div></pre></td></tr></table></figure>
+</li>
 </ul>
 
       

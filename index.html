@@ -154,13 +154,9 @@
       
         <p>对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的<strong>静态工厂方法</strong>，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title">valueOf</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> (b ? TRUE : FALSE);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>类可以通过静态工厂方法来提供它的客户端，而不是通过构造器，这样做具有几大优势：</p>
-<ul>
-<li>它们有名称</li>
-<li>不必在每次调用它们的时候都创建一个心对象</li>
-<li>它们可以返回原返回类型的任何子类型的对象</li>
-</ul>
-
+        
+          <a class="article-more-a" href="/2017/10/25/考虑用静态工厂方法代替构造器/#more">more >></a>
+        
       
 
       
