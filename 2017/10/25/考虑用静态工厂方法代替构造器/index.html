@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="Leo's Blog">
 <meta property="og:description" content="对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的静态工厂方法，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：
 123public static Boolean valueOf(boolean b) &amp;#123;    return (">
-<meta property="og:updated_time" content="2017-10-30T07:24:42.000Z">
+<meta property="og:updated_time" content="2017-10-30T07:33:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="考虑用静态工厂方法代替构造器">
 <meta name="twitter:description" content="对于类而言，为了让客户端获取它自身的一个实例，最常用的方法是提供一个共有的构造器。还有一种方法：类可以提供一个共有的静态工厂方法，它只是一个返回类的实例等静态方法。下面是一个来自Boolean的简单示例。这个方法将boolean基本类型值转换成了一个Boolean对象引用：
@@ -180,6 +180,24 @@
 <p>创建对象的时候只需要：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Map&lt;String, List&lt;String&gt;&gt; m = HashMap.newInstance();</div></pre></td></tr></table></figure>
 </li>
+</ul>
+<p>静态工厂方法的主要缺点在于：</p>
+<ul>
+<li><p>类如果不含共有或者受保护的构造器，就不能被子类化。</p>
+<p>这一点对应于优点中的第三条，如果要使用某个子类实例化，那么这个子类必须要有public或者protected的构造方法。</p>
+</li>
+<li><p>它们与其他的静态方法没有区别</p>
+</li>
+</ul>
+<p>  地位不像构造函数一样很高。</p>
+<p>常用的静态方法构造名称有如下： </p>
+<ul>
+<li>valueOf：不太严格的讲，该方法返回的实例与它的参数有相同的值，这样的静态方法，实际上就是做类型的转换方法。 </li>
+<li>of：和上面一样，感觉和枚举优点类似 </li>
+<li>getInstance：返回的实例是根据参数描述来的，一般用在单利模式中比较多 </li>
+<li>newInstance：和上面的getInstance差不多，但是使用的是new，所以要保证每次返回的对象是不一样的 </li>
+<li>getType：和getInstance一样，但是在工厂方法处于不同类中的时候使用，Type表示工厂方法返回对象的类型 </li>
+<li>newType：和newInstance一样，但是在工厂方法中处于不同类中的时候使用，Type表示工厂方法返回对象类型。</li>
 </ul>
 
       
