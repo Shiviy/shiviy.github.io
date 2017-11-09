@@ -8,19 +8,16 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Android View的工作流程 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。
-1 measure过程measure过程需要分情况来看，如果是一个原始的View，那么通过measure方法就完成了其测量过程，如果是一个ViewGroup">
+  <meta name="description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android View的工作流程">
 <meta property="og:url" content="http://yoursite.com/2017/08/19/Android-View的工作流程/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。
-1 measure过程measure过程需要分情况来看，如果是一个原始的View，那么通过measure方法就完成了其测量过程，如果是一个ViewGroup">
-<meta property="og:updated_time" content="2017-09-27T07:48:13.000Z">
+<meta property="og:description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。">
+<meta property="og:updated_time" content="2017-11-09T08:47:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android View的工作流程">
-<meta name="twitter:description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。
-1 measure过程measure过程需要分情况来看，如果是一个原始的View，那么通过measure方法就完成了其测量过程，如果是一个ViewGroup">
+<meta name="twitter:description" content="View的工作流程View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -155,6 +152,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="View的工作流程"><a href="#View的工作流程" class="headerlink" title="View的工作流程"></a>View的工作流程</h3><p>View的工作流程主要指measure、layout、draw这三大流程，即测量、布局和绘制，其中measure确定View的测量宽高，layout确定View的最终宽高和四个顶点的位置，而draw则将View绘制到屏幕上。</p>
+<a id="more"></a>
 <h4 id="1-measure过程"><a href="#1-measure过程" class="headerlink" title="1 measure过程"></a>1 measure过程</h4><p>measure过程需要分情况来看，如果是一个原始的View，那么通过measure方法就完成了其测量过程，如果是一个ViewGroup，出来完成自己的测量过程外，还会遍历去调用所有子元素的measure方法，各个子元素再递归去执行这个过程。</p>
 <p><strong>1. View的measure过程</strong></p>
 <p>View的measure过程由其measure方法来完成，measure方法是一个final方法，也就是说子类不能重写它，在measure方法中会去调用View的onMeasure方法，如下所示：</p>
