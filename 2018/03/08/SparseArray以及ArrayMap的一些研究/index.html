@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Android IPC机制学习 | Leo&#39;s Blog</title>
+  <title>SparseArray以及ArrayMap的一些研究 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
+  <meta name="description" content="This is a blog that record my learning of Android">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android IPC机制学习">
-<meta property="og:url" content="http://yoursite.com/2017/05/25/Android-IPC机制学习/index.html">
+<meta property="og:title" content="SparseArray以及ArrayMap的一些研究">
+<meta property="og:url" content="http://yoursite.com/2018/03/08/SparseArray以及ArrayMap的一些研究/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
-<meta property="og:updated_time" content="2017-06-14T14:48:42.000Z">
+<meta property="og:description" content="This is a blog that record my learning of Android">
+<meta property="og:updated_time" content="2018-03-08T07:45:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android IPC机制学习">
-<meta name="twitter:description" content="在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。">
+<meta name="twitter:title" content="SparseArray以及ArrayMap的一些研究">
+<meta name="twitter:description" content="This is a blog that record my learning of Android">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -131,61 +131,27 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Android-IPC机制学习" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-SparseArray以及ArrayMap的一些研究" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Android IPC机制学习
+      SparseArray以及ArrayMap的一些研究
     </h1>
   
 
         
-        <a href="/2017/05/25/Android-IPC机制学习/" class="archive-article-date">
-  	<time datetime="2017-05-25T13:13:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-25</time>
+        <a href="/2018/03/08/SparseArray以及ArrayMap的一些研究/" class="archive-article-date">
+  	<time datetime="2018-03-08T07:45:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-08</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在Android中，每一个应用程序都是由一些Activity和Service组成的，这些Activity和Service有可能运行在同一个进程中，也有可能运行在不同的进程中，那么不同线程中的Activity和Service如何通信，下面就开始研究这个问题。</p>
-<a id="more"></a>
-<h3 id="IPC机制简介"><a href="#IPC机制简介" class="headerlink" title="IPC机制简介"></a>IPC机制简介</h3><p>首先要知道什么是IPC，IPC是Inter-Process Communication的简写，意思指进程间通信或者跨进程通信。那么说到IPC就肯定要说到多进程。</p>
-<p>多进程的情况分为两种</p>
-<ol>
-<li>第一种情况是一个应用因为某些原因自身需要采用多进程模式来实现，比如有些模块由于特殊原因，需要单独运行在单独的进程中，又或者未来加大一个应用可使用的内存所以需要通过多进程来获取多份内存空间。因为Android对单个应用所使用的最大内存做了限制，早期一些版本肯能是16MB，不同设备有不同的大小。</li>
-<li>第二种情况是当前的应用需要向其他应用获取数据，由于是两个应用，因此必须采用跨进程的方式来获取所需的数据。比如ContentProvider就是一种跨进程通信。</li>
-</ol>
-<h3 id="Android中的多进程模式"><a href="#Android中的多进程模式" class="headerlink" title="Android中的多进程模式"></a>Android中的多进程模式</h3><p>我们首先需要了解Android中的多进程模式，通过给四大组件制定android:process属性，我们就可以开启多进程模式，但是在实际使用中却会导致各种问题，下面会详细分析这些问题。</p>
-<h4 id="开启多进程模式"><a href="#开启多进程模式" class="headerlink" title="开启多进程模式"></a>开启多进程模式</h4><p>Android中的多进程指的是在一个应用中存在多个进程的情况，那么首先来看下怎么开启多个线程。</p>
-<p>在Android中使用多进程，需要给四大组件在AndroidMenifest中指定android:process属性。</p>
-<h4 id="多进程模式所带来的问题"><a href="#多进程模式所带来的问题" class="headerlink" title="多进程模式所带来的问题"></a>多进程模式所带来的问题</h4><p>一般来说在一个应用中使用了多进程会造成以下一些问题</p>
-<ol>
-<li>静态成员和单例模式完全失效。</li>
-<li>线程同步机制完全失效</li>
-<li>SharedPreference的可靠性下降。</li>
-<li>Application会多次创建。</li>
-</ol>
-<p>12两点其实原因是类似的，Android为每一个进程都分配了一个独立的虚拟机，不同的虚拟机在内存分配上有不同的地址空间，这就导致在不同的虚拟机中访问同一个类的对象会产生多份副本。因此所有运行在不同进程中的四大组件，只要它们需要通过内存来共享数据，那么都会共享失败。2所造成的原因和1类似，既然都不是一块内存，那么不管是锁对象还是锁全局类都无法保证线程同步。</p>
-<p>第3点的原因是因为SharedPreference不支持两个进程同时去执行写操作，这有可能会导致数据丢失。因为SharedPreference底层是通过读写XML文件来实现的，那么并发写肯定会出现问题。</p>
-<p>第4个问题，由于一个组件在新的进程中运行的时候，系统需要在创建新的进程的时候分配独立的虚拟机，相当于启动一个应用，因此又会创建新的Application。</p>
-<h3 id="IPC基础概念介绍"><a href="#IPC基础概念介绍" class="headerlink" title="IPC基础概念介绍"></a>IPC基础概念介绍</h3><p>书中主要介绍了三个概念：Serializable，Parcelable，以及Binder。平时工作中，前两个用的还是比较多的，但是看Binder就很费劲，因此这次就先跟着书上来看，因为上网搜了资料下来看之后，发现好多基本是在罗列代码，很多部分自己实力还是不够。</p>
-<p>简单的说下以上的3点：</p>
-<ul>
-<li><p>Serializable：它是Java所提供的一种序列化的接口，它是一个空接口，为对象提供标准的序列化和反序列化操作。它的使用过程也很简单，只需要实现这个接口，然后可以由Android Studio自动生成。</p>
-</li>
-<li><p>Parcelable: 它也是一个接口，只要实现这个接口，一个类的对象就可以通过Intent和Binder传递。</p>
-</li>
-<li><p>两者之间的区别：Serializable是Java中的序列化接口，使用简单，但是开销很大，序列化和反序列化都需要大量I/O操作。而Parcelable就是Android中的序列化方式，因此更适合用在Android平台上，缺点是使用麻烦，但是效率很高。Parcelable主要用在内存序列化，但是将对象序列化到存储设备中或者将对象序列化后通过网络传输这两种情况使用Parcelable会稍显复杂，因此这两种情况推荐采用Serializable。</p>
-</li>
-<li><p>Binder：Binder是Android中的一个类，它实现了IBinder接口。从IPC角度说Binder是Android中的一种跨进程通信方式，它可以理解为一种虚拟的物理设备，它的设备驱动是/dev/binder，这种通信方式在Linux中没有；从Android Framework角度来说，Binder是ServiceManager连接各种Manager（ActivityManager、WindowManager等）和相应ManagerService的桥梁；从Android应用层来说，Binder是客户端和服务端进行通信的媒介，当bindService的时候，服务端会反悔一个包含了服务端业务调用的Binder对象，通过这个对象，客户端就可以获取服务端提供的服务或者数据，这里的服务包括普通服务和基于AIDL的服务。</p>
-<p>​</p>
-</li>
-</ul>
-
+        
       
 
       
@@ -264,7 +230,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/05/25/Android-IPC机制学习/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2018/03/08/SparseArray以及ArrayMap的一些研究/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -278,18 +244,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/06/03/ViewPager的嵌套问题/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          ViewPager的嵌套问题
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/05/23/DiskLruCache的用法简介/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">DiskLruCache的用法简介</div>
+    <a href="/2017/10/31/遇到多个构造器参数时考虑使用构建器/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">遇到多个构造器参数时考虑使用构建器</div>
       <i class="icon-circle-right"></i>
     </a>
   
