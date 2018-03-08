@@ -8,16 +8,21 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>SparseArray以及ArrayMap的一些研究 | Leo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="This is a blog that record my learning of Android">
+  <meta name="description" content="SparseArray是Android中为这样的HashMap专门写的class，目的是提高效率，其核心是折半查找函数（binarySearch）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SparseArray以及ArrayMap的一些研究">
 <meta property="og:url" content="http://yoursite.com/2018/03/08/SparseArray以及ArrayMap的一些研究/index.html">
 <meta property="og:site_name" content="Leo's Blog">
-<meta property="og:description" content="This is a blog that record my learning of Android">
-<meta property="og:updated_time" content="2018-03-08T07:45:22.000Z">
+<meta property="og:description" content="SparseArray是Android中为这样的HashMap专门写的class，目的是提高效率，其核心是折半查找函数（binarySearch）">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tNc79gy1fp5jps9mshj30nu0os76k.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1fp5jsmfxtkj30zy0nswib.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fp5jwza7jhj31260hejui.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1fp5jzzet4qj31060lewig.jpg">
+<meta property="og:updated_time" content="2018-03-08T09:50:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SparseArray以及ArrayMap的一些研究">
-<meta name="twitter:description" content="This is a blog that record my learning of Android">
+<meta name="twitter:description" content="SparseArray是Android中为这样的HashMap专门写的class，目的是提高效率，其核心是折半查找函数（binarySearch）">
+<meta name="twitter:image" content="https://ws4.sinaimg.cn/large/006tNc79gy1fp5jps9mshj30nu0os76k.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Leo&#39;s Blog" type="application/atom+xml">
   
@@ -151,7 +156,41 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>SparseArray是Android中为<integer, object="">这样的HashMap专门写的class，目的是提高效率，其核心是折半查找函数（binarySearch）</integer,></p>
+ <a id="more"></a>
+<h3 id="SparseArray的使用"><a href="#SparseArray的使用" class="headerlink" title="SparseArray的使用"></a>SparseArray的使用</h3><p>创建</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">SparseArray sparseArray = <span class="keyword">new</span> SparseArray();</div><div class="line">SparseArray sparseArray = <span class="keyword">new</span> SparseArray(capacity);</div></pre></td></tr></table></figure>
+<p>SparseArray有两个构造方法，一个默认构造方法，一个传入容量</p>
+<h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> key, E value)</span></span></div></pre></td></tr></table></figure>
+<p>存放的健值对中的健是int数据</p>
+<h3 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> key)</span></span></div><div class="line"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> key, E valueIfKeyNotFound)</span></div></pre></td></tr></table></figure>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> key)</span></span></div></pre></td></tr></table></figure>
+<h3 id="SparseArray的原理"><a href="#SparseArray的原理" class="headerlink" title="SparseArray的原理"></a>SparseArray的原理</h3><p>首先来看一下Google官方的介绍：</p>
+<blockquote>
+<p>SparseArrays map integers to Objects. Unlike a normal array of Objects,there can be gaps in the indices. It is intended to be more memory efficient than using a HashMap to map Integers to Objects, both because it avoids auto-boxing keys and its data structure doesn’t rely on an extra entry object for each mapping.</p>
+</blockquote>
+<p>SparseArray使用int[]数组存放key，避免了HashMap中基本数据类型需要装箱的步骤，其次不使用额外的结构体Entry， 单个元素的存储成本下降。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>首先来看它的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Creates a new SparseArray containing no mappings.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">SparseArray</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(<span class="number">10</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Creates a new SparseArray containing no mappings that will not</div><div class="line"> * require any additional memory allocation to store the specified</div><div class="line"> * number of mappings.  If you supply an initial capacity of 0, the</div><div class="line"> * sparse array will be initialized with a light-weight representation</div><div class="line"> * not requiring any additional array allocations.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">SparseArray</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (initialCapacity == <span class="number">0</span>) &#123;</div><div class="line">      	<span class="comment">//如果容量为0，获取两个长度为0的数组</span></div><div class="line">        mKeys = EmptyArray.INT;</div><div class="line">        mValues = EmptyArray.OBJECT;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      	<span class="comment">//创建两个长度相同的数组，一个存放key，一个存放values</span></div><div class="line">        mValues = ArrayUtils.newUnpaddedObjectArray(initialCapacity);</div><div class="line">        mKeys = <span class="keyword">new</span> <span class="keyword">int</span>[mValues.length];</div><div class="line">    &#125;</div><div class="line">    mSize = <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到，初始化只是简单的创建了两个数组。</p>
+<h3 id="put-1"><a href="#put-1" class="headerlink" title="put()"></a>put()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Adds a mapping from the specified key to the specified value,</div><div class="line"> * replacing the previous mapping from the specified key if there</div><div class="line"> * was one.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> key, E value)</span> </span>&#123;</div><div class="line">  	<span class="comment">//首先通过二分查找去key数组中查找要插入的key，返回索引</span></div><div class="line">    <span class="keyword">int</span> i = ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (i &gt;= <span class="number">0</span>) &#123;</div><div class="line">      	<span class="comment">//如果索引 i&gt;=0 说明数组中已经有了该key，则直接覆盖原来的值</span></div><div class="line">        mValues[i] = value;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      	<span class="comment">//取反，这里得到的i应该是最合适key插入的位置</span></div><div class="line">        i = ~i;</div><div class="line">		<span class="comment">//如果索引限于当前已经存放的长度，并且这个位置上的值为DELETED（即被标记为删除掉的值）</span></div><div class="line">        <span class="keyword">if</span> (i &lt; mSize &amp;&amp; mValues[i] == DELETED) &#123;</div><div class="line">          	<span class="comment">//直接赋值返回，并且size不需要增加</span></div><div class="line">            mKeys[i] = key;</div><div class="line">            mValues[i] = value;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">		<span class="comment">//到这里说明直接赋值失败，检查当前是否被标记为回收，并且存放的长度已经大于等于数组长度</span></div><div class="line">        <span class="keyword">if</span> (mGarbage &amp;&amp; mSize &gt;= mKeys.length) &#123;</div><div class="line">          	<span class="comment">//回收数组中应该被删除的值</span></div><div class="line">            gc();</div><div class="line"></div><div class="line">            <span class="comment">// Search again because indices may have changed.</span></div><div class="line">          	<span class="comment">//重新搜索一次，因为数组可能发生了变化</span></div><div class="line">            i = ~ContainerHelpers.binarySearch(mKeys, mSize, key);</div><div class="line">        &#125;</div><div class="line">			<span class="comment">//最终在i位置上插入键与值，并且size+1</span></div><div class="line">        mKeys = GrowingArrayUtils.insert(mKeys, mSize, i, key);</div><div class="line">        mValues = GrowingArrayUtils.insert(mValues, mSize, i, value);</div><div class="line">        mSize++;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>插入大体有以下几个特点：</p>
+<ul>
+<li>存放key的数组是有序的（满足二分查找）</li>
+<li>如果冲突，新值直接覆盖原值，并不会返回原值（HaspMap会返回原值）</li>
+<li>如果单前要插入的key的索引上的值为DELETE，则直接覆盖</li>
+<li>如果前几步都失败了 ，检查是否需要gc()并在该索引上插入数据</li>
+</ul>
+<p>上述逻辑可以用图来表示：</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fp5jps9mshj30nu0os76k.jpg" alt="sparse_array_put_one"></p>
+<p>上面这个图，插入一个key=3的元素，因为在mKeys中已经存在这个值，因此直接覆盖</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fp5jsmfxtkj30zy0nswib.jpg" alt="sparse_array_put_two"></p>
+<p>如图所示，mKeys中并没有3这个值，但是通过二分查找得出目前应该插入的索引的位置为2，即key = 4所在的位置，而这个位置上的value被标记为了DELETE，所以会直接讲该位置上的key 赋值为3，并将该位置上的value赋值为put()传入的对象。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1fp5jwza7jhj31260hejui.jpg" alt="sparse_array_put_three"></p>
+<p>该图的数组容量已经满了，而且3应该插入的位置已经有4了，而5所指向的值为DELETE，这种情况下会先去回收DELETE，重新调整数据结构，图中的例子会回收5然后重新计算3应该插入的位置</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fp5jzzet4qj31060lewig.jpg" alt="sparse_array_put_four"></p>
+<p>最后一种情况，数组满了并且没有3这个值，就只能对数组进行扩容，然后插入数据</p>
+
       
 
       
@@ -180,6 +219,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Android面试的一些问题</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
